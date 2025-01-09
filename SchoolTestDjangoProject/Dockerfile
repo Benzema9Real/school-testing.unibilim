@@ -9,6 +9,6 @@ COPY . .
 
 RUN env
 
-ENV DJANGO_SETTINGS_MODULE=fund4pro.settings
+ENV DJANGO_SETTINGS_MODULE=SchoolTestDjangoProject.settings
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
