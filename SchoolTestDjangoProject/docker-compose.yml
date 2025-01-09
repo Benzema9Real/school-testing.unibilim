@@ -5,11 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bash -c "python manage.py runserver 0.0.0.0:80"
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
-      - "8080:80"
+      - "8080:8000"
     depends_on:
       - db
     environment:
