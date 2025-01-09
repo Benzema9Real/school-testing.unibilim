@@ -13,7 +13,7 @@ services:
     depends_on:
       - db
     environment:
-      - DJANGO_SETTINGS_MODULE=fund4pro.settings
+      - DJANGO_SETTINGS_MODULE=SchoolTestDjangoProject.settings
       - DATABASE_URL=postgres://my_user:my_password@db:5432/my_database
     restart: always
 
