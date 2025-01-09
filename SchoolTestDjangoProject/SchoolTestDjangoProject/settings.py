@@ -127,16 +127,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'auth.User'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'default_db',
-#         'USER': 'gen_user',
-#         'HOST': '213.171.12.88',
-#         'PASSWORD': 'N3{b#--Q3L69>4',
-#         'PORT': '5432',
-#         'OPTIONS': {
-#             'connect_timeout': 300,
-#         }
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'school_testing',
+        'USER': 'gen_user',
+        'HOST': '213.171.12.88',
+        'PASSWORD': 'N3{b#--Q3L69>4',
+        'PORT': '5432',
+        'OPTIONS': {
+            'connect_timeout': 300,
+        }
+    }
+}
