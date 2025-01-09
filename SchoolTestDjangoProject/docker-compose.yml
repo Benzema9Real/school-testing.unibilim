@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py runserver 0.0.0.0:80"
+    volumes:
+      - .:/app
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=fund4pro.settings
+      - DATABASE_URL=postgres://my_user:my_password@db:5432/my_database
+    restart: always
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: my_database
+      POSTGRES_USER: my_user
+      POSTGRES_PASSWORD: my_password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  db-data:
