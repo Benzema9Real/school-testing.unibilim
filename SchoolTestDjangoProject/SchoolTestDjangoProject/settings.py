@@ -131,9 +131,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'school_testing',
-        'USER': 'gen_user',
+        'USER': 'superadmin',
         'HOST': '213.171.12.88',
-        'PASSWORD': 'N3{b#--Q3L69>4',
+        'PASSWORD': '!zFax0Nc\7tv.u',
         'PORT': '5432',
         'OPTIONS': {
             'connect_timeout': 300,
