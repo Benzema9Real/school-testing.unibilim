@@ -4,20 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pythonProjectcSchoolTest.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/SchoolTestDjangoProject/yasg.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all">
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_login.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_register.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/school.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/user_all.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/user_id.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/analytics_school_id.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/analytics_student_id.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/tests_create.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/tests_id.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/school_testing/tests_id_sumbit.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/permissions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/filters.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/serializers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/SchoolTestDjangoProject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/SchoolTestDjangoProject/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/SchoolTestDjangoProject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/SchoolTestDjangoProject/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/register/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/register/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/register/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +53,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.auth_login.executor": "Run",
+    "Python.auth_register.executor": "Run",
+    "Python.school.executor": "Run",
+    "Python.user_all.executor": "Run",
+    "Python.user_id.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -55,8 +68,56 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\admin\PycharmProjects\pythonProjectcSchoolTest\SchoolTestDjangoProject" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\admin\PycharmProjects\pythonProjectcSchoolTest\SchoolTestDjangoProject\pytest\school_testing" />
+      <recent name="C:\Users\admin\PycharmProjects\pythonProjectcSchoolTest\SchoolTestDjangoProject\pytest\register" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.user_id">
+    <configuration name="auth_login" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProjectcSchoolTest" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_login.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="auth_register" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProjectcSchoolTest" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_register.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="pythonProjectcSchoolTest" />
       <option name="ENV_FILES" value="" />
@@ -79,6 +140,81 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="school" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProjectcSchoolTest" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/school.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="user_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProjectcSchoolTest" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/user_all.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="user_id" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProjectcSchoolTest" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/user_id.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.user_id" />
+        <item itemvalue="Python.user_all" />
+        <item itemvalue="Python.school" />
+        <item itemvalue="Python.auth_login" />
+        <item itemvalue="Python.auth_register" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -96,7 +232,70 @@
       <option name="presentableId" value="Default" />
       <updated>1736265936278</updated>
     </task>
+    <task id="LOCAL-00001" summary="first">
+      <option name="closed" value="true" />
+      <created>1736422838570</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1736422838570</updated>
+    </task>
+    <task id="LOCAL-00002" summary="second">
+      <option name="closed" value="true" />
+      <created>1736423680585</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1736423680585</updated>
+    </task>
+    <task id="LOCAL-00003" summary="second">
+      <option name="closed" value="true" />
+      <created>1736426628214</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1736426628214</updated>
+    </task>
+    <task id="LOCAL-00004" summary="second">
+      <option name="closed" value="true" />
+      <created>1736426726920</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1736426726920</updated>
+    </task>
+    <task id="LOCAL-00005" summary="second">
+      <option name="closed" value="true" />
+      <created>1736427360129</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736427360129</updated>
+    </task>
+    <task id="LOCAL-00006" summary="second">
+      <option name="closed" value="true" />
+      <created>1736427441563</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736427441563</updated>
+    </task>
+    <task id="LOCAL-00007" summary="second">
+      <option name="closed" value="true" />
+      <created>1736438547281</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1736438547281</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="first" />
+    <MESSAGE value="second" />
+    <MESSAGE value="update all" />
+    <option name="LAST_COMMIT_MESSAGE" value="update all" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -59,9 +59,9 @@ class LoginSerializer(serializers.Serializer):
         except Profile.DoesNotExist:
             raise AuthenticationFailed('Invalid name or phone number.')
         refresh = RefreshToken.for_user(user)
+        token = str(refresh.access_token)
         return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+            "token": token,
         }
 
 

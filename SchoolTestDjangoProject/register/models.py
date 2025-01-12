@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 
 
-# Валидатор для номера телефона
+
 def validate_kyrgyz_phone_number(value):
     kyrgyz_phone_pattern = r'^\+996\d{9}$'
     if not re.match(kyrgyz_phone_pattern, value):
@@ -17,6 +17,10 @@ class School(models.Model):
 
     def __str__(self):
         return f'{self.city} - {self.name}'
+
+    class Meta:
+        verbose_name = 'Школы'
+        verbose_name_plural = 'Школы'
 
 
 class Profile(models.Model):
@@ -35,4 +39,4 @@ class Profile(models.Model):
     role = models.CharField(max_length=100, choices=ROLE_CHOICES, default='student')
 
     def __str__(self):
-        return f'{self.name} ({self.phone_number}) - {self.school}'
+        return f'{self.role} {self.name} ({self.phone_number}) - {self.school}'

@@ -19,7 +19,7 @@ class RegisterView(generics.CreateAPIView):
         if serializer.is_valid():
             user = serializer.save(role='student')
             refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
+            token = str(refresh.access_token)
             return Response({
                 'user': {
                     'username': user.username,
@@ -27,8 +27,7 @@ class RegisterView(generics.CreateAPIView):
                     'phone_number': user.profile.phone_number,
                     'role': user.profile.role,
                 },
-                'access_token': str(access_token),
-                'refresh_token': str(refresh),
+                "token": token,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
