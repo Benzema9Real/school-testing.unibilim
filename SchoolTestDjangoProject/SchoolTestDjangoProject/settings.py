@@ -132,11 +132,11 @@ DATABASES = {
         'NAME': 'school_testing',
         'USER': 'superadmin',
         'PASSWORD': '!zFax0Nc\\7tv.u',
-        'HOST': 'schooltestdjangoproject-db-1',
+        'HOST': '213.171.12.88',
         'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'disable',
-        }
+        # 'OPTIONS': {
+        #     'sslmode': 'require',
+        # }
     }
 }
 
