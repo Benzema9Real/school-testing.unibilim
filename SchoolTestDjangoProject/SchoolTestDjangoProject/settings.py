@@ -133,7 +133,7 @@ DATABASES = {
         'USER': 'superadmin',
         'HOST': '213.171.12.88',
         'PASSWORD': '!zFax0Nc\\7tv.u',
-        'PORT': '5433',
+        'PORT': '5432',
         'OPTIONS': {
             'connect_timeout': 300,
         }
