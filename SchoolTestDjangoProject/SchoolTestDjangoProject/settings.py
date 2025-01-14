@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%l!#27!52!*7!x)7l3%$-qn_5iycyz2ueagp)5t$#8h9of&&39
 DEBUG = True
 
 ALLOWED_HOSTS = ['school-testing.unibilim.kg',
-                 'www.school-testing.unibilim.kg', 'localhost', '127.0.0.1']
+                 'www.school-testing.unibilim.kg','77.232.138.241', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://school-testing.unibilim.kg',
                         'https://www.school-testing.unibilim.kg', ]
 CSRF_COOKIE_SECURE = True
