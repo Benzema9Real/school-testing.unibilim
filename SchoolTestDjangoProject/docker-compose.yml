@@ -22,7 +22,7 @@ services:
     environment:
       POSTGRES_DB: school_testing
       POSTGRES_USER: superadmin
-      POSTGRES_PASSWORD: !zFax0Nc\7tv.u
+      POSTGRES_PASSWORD: !zFax0Nc\\7tv.u
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: always
