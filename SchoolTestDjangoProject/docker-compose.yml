@@ -14,15 +14,15 @@ services:
       - db
     environment:
       - DJANGO_SETTINGS_MODULE=SchoolTestDjangoProject.settings
-#      - DATABASE_URL=postgres://my_user:my_password@db:5432/my_database
+      - DATABASE_URL=postgres://my_user:my_password@db:5432/my_database
     restart: always
 
   db:
     image: postgres:latest
     environment:
-      POSTGRES_DB: school_testing
-      POSTGRES_USER: superadmin
-      POSTGRES_PASSWORD: !zFax0Nc\\7tv.u
+      POSTGRES_DB: my_database
+      POSTGRES_USER: my_user
+      POSTGRES_PASSWORD: my_password
     volumes:
       - db-data:/var/lib/postgresql/data
     restart: always
