@@ -135,7 +135,7 @@ DATABASES = {
         'HOST': 'schooltestdjangoproject-db-1',
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'require',
+            'sslmode': 'disable',
         }
     }
 }
