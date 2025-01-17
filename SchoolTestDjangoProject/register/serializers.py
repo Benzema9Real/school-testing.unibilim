@@ -47,17 +47,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    name = serializers.CharField(required=True)
     phone_number = serializers.CharField(required=True)
-
     def validate(self, data):
-        name = data.get('name')
         phone_number = data.get('phone_number')
         try:
-            profile = Profile.objects.get(name=name, phone_number=phone_number)
+            profile = Profile.objects.get(phone_number=phone_number)
             user = profile.user
         except Profile.DoesNotExist:
-            raise AuthenticationFailed('Invalid name or phone number.')
+            raise AuthenticationFailed('Invalid phone number.')
         refresh = RefreshToken.for_user(user)
         token = str(refresh.access_token)
         return {

@@ -5,7 +5,6 @@ def test_auth_login():
     url = 'https://school-testing.unibilim.kg/auth/login/'
 
     data = {
-        "name": "Test User",
         "phone_number": "+996704444501"
     }
 

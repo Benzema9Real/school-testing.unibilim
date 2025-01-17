@@ -32,15 +32,18 @@ class Test(models.Model):
 
 class Question(models.Model):
     text = models.TextField('Текст вопроса')
-    image = models.ImageField('Изображения вопроса', upload_to='question/img/',blank=True, null=True )
+    image = models.ImageField('Изображения вопроса', upload_to='question/img/', blank=True, null=True)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
+    number = models.PositiveIntegerField('Номер вопроса', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.number is None:
+            max_number = Question.objects.filter(test=self.test).aggregate(models.Max('number')).get('number__max')
+            self.number = (max_number or 0) + 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.test} {self.text} {self.image}'
-
-    class Meta:
-        verbose_name = 'Вопросы'
-        verbose_name_plural = 'Вопросы'
+        return f'Вопрос {self.number}: {self.text[:30]}'
 
 
 class AnswerOption(models.Model):
@@ -48,8 +51,14 @@ class AnswerOption(models.Model):
     text = models.CharField(max_length=500)
     is_correct = models.BooleanField()
 
+    @property
+    def letter(self):
+        letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е']
+        index = list(self.question.options.all()).index(self) if self in self.question.options.all() else None
+        return letters[index] if index is not None and index < len(letters) else '?'
+
     def __str__(self):
-        return f'{self.question} {self.text} {self.is_correct}'
+        return f'{self.letter}. {self.text} ({self.is_correct})'
 
     class Meta:
         verbose_name = 'Варианты ответа'
