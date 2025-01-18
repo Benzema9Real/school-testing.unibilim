@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_login.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/pytest/register/auth_login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/register/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/register/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/models.py" afterDir="false" />
-    </list>
+    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -391,7 +386,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736854490022</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737126182752</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1737126182752</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

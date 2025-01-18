@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .permissions import IsSuperUser
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, SchoolSerializer
 from .models import Profile, School
 
@@ -46,13 +47,13 @@ class LoginView(generics.GenericAPIView):
 class ProfileGetView(generics.ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsSuperUser]
 
 
 class ProfileGetIdView(generics.RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsSuperUser]
 
 
 class SchoolView(generics.ListAPIView):

@@ -61,8 +61,8 @@ class AnswerOption(models.Model):
         return f'{self.letter}. {self.text} ({self.is_correct})'
 
     class Meta:
-        verbose_name = 'Варианты ответа'
-        verbose_name_plural = 'Варианты ответа'
+        verbose_name = 'Вопросы'
+        verbose_name_plural = 'Вопросы'
 
 
 class Event(models.Model):
