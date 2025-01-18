@@ -2,13 +2,16 @@ from rest_framework import status
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
     SubjectSerializer, EventSerializer, RecommendationSerializer
-from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import User, Test, Result, Answer
+from rest_framework import generics, status
+from rest_framework.response import Response
+from django.db.models import Q
+from .models import Subject, Result, Recommendation
+from .serializers import RecommendationSerializer
 from register.models import School
 from django.db.models import Avg
 
@@ -187,9 +190,51 @@ class EventCreateView(generics.CreateAPIView):
 
 
 class RecommendationCreateView(generics.CreateAPIView):
-    queryset = Recommendation.objects.all()
     serializer_class = RecommendationSerializer
-    permission_classes = []
+    def post(self, request):
+        school_id = request.data.get('school_id')
+        grade = request.data.get('grade')
+        subject_id = request.data.get('subject_id')
+        min_percentage = request.data.get('min_percentage')
+        max_percentage = request.data.get('max_percentage')
+        message = request.data.get('message')
+        link = request.data.get('link')
+        # if not all([school_id, grade, subject_id, min_percentage, max_percentage, message]):
+        #     return Response({'error': 'Все поля обязательны.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            school = School.objects.get(id=school_id)
+            subject = Subject.objects.get(id=subject_id)
+
+
+            results = Result.objects.filter(
+                Q(test__school=school) &
+                Q(test__subject=subject) &
+                Q(student__profile__grade=grade) &
+                Q(percentage__gte=min_percentage) &
+                Q(percentage__lte=max_percentage)
+            )
+
+            if not results.exists():
+                return Response({'error': 'Не найдено учеников, соответствующих критериям.'},
+                                status=status.HTTP_404_NOT_FOUND)
+
+            for result in results:
+                student = result.student
+                print(f"Отправлено сообщение ученику {student.profile.name}: {message} Ссылка: {link}")
+
+
+            return Response(
+                {'status': 'Сообщения успешно отправлены.', 'total_students': results.count()},
+                status=status.HTTP_200_OK,
+            )
+
+        except School.DoesNotExist:
+            return Response({'error': 'Указанная школа не найдена.'}, status=status.HTTP_404_NOT_FOUND)
+        except Subject.DoesNotExist:
+            return Response({'error': 'Указанный предмет не найден.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class RecommendationListView(generics.ListAPIView):

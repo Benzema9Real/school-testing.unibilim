@@ -116,10 +116,20 @@ class Result(models.Model):
 
 
 class Recommendation(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    condition = models.CharField(max_length=255, help_text="Например: <60")
-    content = models.TextField()
-    link = models.URLField(blank=True, null=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="Школа")
+    grade = models.CharField(max_length=50, verbose_name="Класс", help_text="Например: 11 класс")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Предмет")
+    min_percentage = models.DecimalField(
+        max_digits=5, decimal_places=2, verbose_name="Минимальный процент",
+        help_text="Минимальный результат, например: 40"
+    )
+    max_percentage = models.DecimalField(
+        max_digits=5, decimal_places=2, verbose_name="Максимальный процент",
+        help_text="Максимальный результат, например: 60"
+    )
+    message = models.TextField(verbose_name="Сообщение", help_text="Текст сообщения для отправки")
+    link = models.URLField(blank=True, null=True, verbose_name="Ссылка", help_text="Ссылка для учеников")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     def __str__(self):
         return f"Recommendation for {self.subject.name}"

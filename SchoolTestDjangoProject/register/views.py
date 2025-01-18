@@ -3,7 +3,6 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from .permissions import IsSuperUser
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer, SchoolSerializer
 from .models import Profile, School
@@ -59,4 +58,4 @@ class ProfileGetIdView(generics.RetrieveAPIView):
 class SchoolView(generics.ListAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsSuperUser]
