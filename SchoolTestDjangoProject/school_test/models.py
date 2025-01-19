@@ -45,6 +45,9 @@ class Question(models.Model):
     def __str__(self):
         return f'Вопрос {self.number}: {self.text[:30]}'
 
+    class Meta:
+        verbose_name = 'Вопросы'
+        verbose_name_plural = 'Вопросы'
 
 class AnswerOption(models.Model):
     question = models.ForeignKey(Question, related_name="options", on_delete=models.CASCADE)
@@ -61,8 +64,8 @@ class AnswerOption(models.Model):
         return f'{self.letter}. {self.text} ({self.is_correct})'
 
     class Meta:
-        verbose_name = 'Вопросы'
-        verbose_name_plural = 'Вопросы'
+        verbose_name = 'Вариант ответа'
+        verbose_name_plural = 'Вариант ответа'
 
 
 class Event(models.Model):
@@ -117,7 +120,7 @@ class Result(models.Model):
 
 class Recommendation(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="Школа")
-    grade = models.CharField(max_length=50, verbose_name="Класс", help_text="Например: 11 класс")
+    class_number = models.CharField(max_length=50, verbose_name="Класс", help_text="Например: 11")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Предмет")
     min_percentage = models.DecimalField(
         max_digits=5, decimal_places=2, verbose_name="Минимальный процент",
@@ -132,8 +135,9 @@ class Recommendation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     def __str__(self):
-        return f"Recommendation for {self.subject.name}"
+        return f"Recommendation for {self.subject.name} - Class {self.class_number}"
 
     class Meta:
         verbose_name = 'Рекомендации'
         verbose_name_plural = 'Рекомендации'
+

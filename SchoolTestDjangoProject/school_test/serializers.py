@@ -12,6 +12,7 @@ class RecommendationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recommendation
         fields = '__all__'
+        read_only_fields = ['created_at']
 
 
 class SubjectSerializer(serializers.ModelSerializer):

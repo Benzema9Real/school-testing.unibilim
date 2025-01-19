@@ -191,38 +191,38 @@ class EventCreateView(generics.CreateAPIView):
 
 class RecommendationCreateView(generics.CreateAPIView):
     serializer_class = RecommendationSerializer
+
     def post(self, request):
         school_id = request.data.get('school_id')
-        grade = request.data.get('grade')
+        class_number = request.data.get('class_number')  # Используем class_number
         subject_id = request.data.get('subject_id')
         min_percentage = request.data.get('min_percentage')
         max_percentage = request.data.get('max_percentage')
         message = request.data.get('message')
         link = request.data.get('link')
-        # if not all([school_id, grade, subject_id, min_percentage, max_percentage, message]):
-        #     return Response({'error': 'Все поля обязательны.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not all([school_id, class_number, subject_id, min_percentage, max_percentage, message]):
+            return Response({'error': 'Все поля обязательны.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             school = School.objects.get(id=school_id)
             subject = Subject.objects.get(id=subject_id)
 
-
             results = Result.objects.filter(
-                Q(test__school=school) &
-                Q(test__subject=subject) &
-                Q(student__profile__grade=grade) &
-                Q(percentage__gte=min_percentage) &
-                Q(percentage__lte=max_percentage)
+                test__school=school,
+                test__subject=subject,
+                student__profile__class_number=class_number,
+                percentage__gte=min_percentage,
+                percentage__lte=max_percentage,
             )
 
             if not results.exists():
                 return Response({'error': 'Не найдено учеников, соответствующих критериям.'},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            for result in results:
+            for index, result in enumerate(results, start=1):
                 student = result.student
-                print(f"Отправлено сообщение ученику {student.profile.name}: {message} Ссылка: {link}")
-
+                print(f"Отправлено сообщение ученику #{index}: {student.profile.name}: {message} Ссылка: {link}")
 
             return Response(
                 {'status': 'Сообщения успешно отправлены.', 'total_students': results.count()},
@@ -235,6 +235,7 @@ class RecommendationCreateView(generics.CreateAPIView):
             return Response({'error': 'Указанный предмет не найден.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class RecommendationListView(generics.ListAPIView):
