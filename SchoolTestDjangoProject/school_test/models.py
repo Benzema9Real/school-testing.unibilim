@@ -71,8 +71,8 @@ class AnswerOption(models.Model):
 class Event(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='event')
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return f"{self.test.name} - {self.school} on {self.date}/{self.time}"
