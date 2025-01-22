@@ -49,6 +49,7 @@ class Question(models.Model):
         verbose_name = 'Вопросы'
         verbose_name_plural = 'Вопросы'
 
+
 class AnswerOption(models.Model):
     question = models.ForeignKey(Question, related_name="options", on_delete=models.CASCADE)
     text = models.CharField(max_length=500)
@@ -72,7 +73,6 @@ class Event(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='event')
     date = models.DateTimeField(auto_now_add=True)
-
 
     def __str__(self):
         return f"{self.test.name} - {self.school} on {self.date}/{self.time}"
@@ -103,12 +103,19 @@ class Result(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2)
     mistakes = models.ManyToManyField(Question, blank=True, related_name="mistakes")
     date_taken = models.DateTimeField(auto_now_add=True)
+    total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True)
+    correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     def total_questions(self):
         return self.test.questions.count()
 
     def correct_answers(self):
         return self.total_questions() - self.mistakes.count()
+
+    def save(self, *args, **kwargs):
+        self.total_questions_count = self.total_questions()
+        self.correct_answers_count = self.correct_answers()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.student.username} - {self.test.name} - {self.percentage}%"
@@ -140,4 +147,3 @@ class Recommendation(models.Model):
     class Meta:
         verbose_name = 'Рекомендации'
         verbose_name_plural = 'Рекомендации'
-
