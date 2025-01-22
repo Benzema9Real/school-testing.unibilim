@@ -91,29 +91,20 @@ class StudentAnalyticsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, *args, **kwargs):
-        # Получаем пользователя по ID
         user = get_object_or_404(User, id=id)
         student_profile = user.profile
         full_name = student_profile.name
-
-        # Подсчитываем количество пройденных тестов
         total_tests_taken = Result.objects.filter(student=user).count()
-
-        # Средний процент за все тесты
         average_percentage = Result.objects.filter(student=user).aggregate(
             avg=Avg('percentage')
         )['avg'] or 0
-
-        # Подсчитываем все ответы
         total_answers = Answer.objects.filter(student=user).count()
-
-        # Подсчитываем правильные ответы и процент правильных
         correct_answers = Answer.objects.filter(student=user, is_correct=True).count()
         correct_percentage = (correct_answers / total_answers * 100) if total_answers > 0 else 0
 
-        # Получаем все рекомендации для студента на основе его результатов
-        recommendations = []
+        recommendations_set = set()
         results = Result.objects.filter(student=user)
+
         for result in results:
             recommendations_for_subject = Recommendation.objects.filter(
                 subject=result.test.subject,
@@ -121,13 +112,17 @@ class StudentAnalyticsView(APIView):
                 max_percentage__gte=result.percentage
             )
             for recommendation in recommendations_for_subject:
-                recommendations.append({
-                    "Предмет": recommendation.subject.name,
-                    "Текст": recommendation.message,
-                    "Ссылка": recommendation.link,
-                })
+                recommendations_set.add((
+                    recommendation.subject.name,
+                    recommendation.message,
+                    recommendation.link,
+                ))
 
-        # Формируем данные для ответа
+        recommendations = [
+            {"Предмет": rec[0], "Текст": rec[1], "Ссылка": rec[2]}
+            for rec in recommendations_set
+        ]
+
         data = {
             "ФИО ученика": full_name,
             "Количество пройденных тестов": total_tests_taken,
@@ -135,9 +130,9 @@ class StudentAnalyticsView(APIView):
             "Процент правильных ответов": round(correct_percentage, 2),
             "Рекомендации": recommendations,
         }
-
-        # Отправляем данные в ответе
         return Response(data, status=200)
+
+
 
 class StudentTestHistoryView(APIView):
     permission_classes = [IsAuthenticated]
@@ -218,7 +213,7 @@ class RecommendationCreateView(generics.CreateAPIView):
 
             if not results.exists():
                 return Response({'error': 'Не найдено учеников, соответствующих критериям.'},
-                                 status=status.HTTP_404_NOT_FOUND)
+                                status=status.HTTP_404_NOT_FOUND)
             school_id = request.data.get('school')
             school = School.objects.get(id=school_id)
             subject_id = request.data.get('school')
@@ -232,7 +227,6 @@ class RecommendationCreateView(generics.CreateAPIView):
                 link=link,
                 subject=subject
             )
-
 
             return Response(
                 {'status': 'Сообщение успешно отправлено.',

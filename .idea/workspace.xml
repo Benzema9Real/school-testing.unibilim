@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all" />
+    <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all">
+      <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -394,7 +396,39 @@
       <option name="project" value="LOCAL" />
       <updated>1737126182752</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737189314287</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1737189314287</updated>
+    </task>
+    <task id="LOCAL-00025" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737193080742</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1737193080742</updated>
+    </task>
+    <task id="LOCAL-00026" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737287334735</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1737287334736</updated>
+    </task>
+    <task id="LOCAL-00027" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737288267430</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1737288267430</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
