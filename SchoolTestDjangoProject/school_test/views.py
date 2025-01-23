@@ -90,6 +90,7 @@ class SchoolAnalyticsView(generics.ListAPIView):
 
 
 class StudentAnalyticsView(generics.ListAPIView):
+    queryset = TestHistory.objects.all()
     serializer_class = AnalyticSerializer
     permission_classes = [IsAuthenticated]
 
