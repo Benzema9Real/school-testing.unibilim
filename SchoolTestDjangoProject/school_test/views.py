@@ -1,7 +1,7 @@
 from rest_framework import status
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
-    SubjectSerializer, EventSerializer, RecommendationSerializer
+    SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404
 from .models import User, Test, Result, Answer
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.db.models import Q
 from .models import Subject, Result, Recommendation
 from .serializers import RecommendationSerializer
 from register.models import School
@@ -133,8 +132,8 @@ class StudentAnalyticsView(APIView):
         return Response(data, status=200)
 
 
-
-class StudentTestHistoryView(APIView):
+class StudentTestHistoryView(generics.ListAPIView):
+    serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id, *args, **kwargs):
@@ -144,25 +143,6 @@ class StudentTestHistoryView(APIView):
         results = Result.objects.filter(student=student).select_related('test', 'test__subject')
 
         tests_history = []
-        for result in results:
-            recommendations = []
-            for rec in result.test.subject.recommendation_set.all():
-                if eval(f"{result.percentage}"):
-                    recommendations.append({
-                        "Текст": rec.content,
-                        "link": rec.link
-                    })
-
-            tests_history.append({
-                "Название теста": result.test.name,
-                "Предмет": result.test.subject.name,
-                "Дата прохождения": result.date_taken.strftime('%Y-%m-%d'),
-                "Ошибки": [question.text for question in result.mistakes.all()],
-                "Всего вопросов": result.total_questions(),
-                "Правильные ответы": result.correct_answers(),
-                "Процент": round(result.percentage, 2),
-                "Рекомендации": recommendations
-            })
 
         data = {
             "ФИО": full_name,

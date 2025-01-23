@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation
+from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation, TestHistory, \
+    SchoolHistory
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -24,6 +25,18 @@ class SubjectSerializer(serializers.ModelSerializer):
 class AnswerOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerOption
+        fields = '__all__'
+
+
+class StudentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestHistory
+        fields = '__all__'
+
+
+class SchoolHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolHistory
         fields = '__all__'
 
 
