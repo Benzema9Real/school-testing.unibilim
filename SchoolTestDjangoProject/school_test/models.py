@@ -107,8 +107,7 @@ class Result(models.Model):
     total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name="Всего вопросов")
     correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                         verbose_name="Правильные ответы")
-    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
-                                             verbose_name="Средний процент")
+
 
     def total_questions(self):
         return self.test.questions.count()
@@ -119,10 +118,6 @@ class Result(models.Model):
     def save(self, *args, **kwargs):
         self.total_questions_count = self.total_questions()
         self.correct_answers_count = self.correct_answers()
-        self.average_percentage = (
-                Result.objects.filter(student=self.student)
-                .aggregate(avg=Avg('percentage'))['avg'] or 0
-        )
         super().save(*args, **kwargs)
 
     def __str__(self):
