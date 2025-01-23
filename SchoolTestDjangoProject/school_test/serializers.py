@@ -131,9 +131,12 @@ class TestSubmissionSerializer(serializers.Serializer):
         result = Result.objects.create(
             student=user,
             test=test,
-            percentage=percentage
+            percentage=percentage,
         )
-        result.mistakes.set(mistakes)
+
+
+        if mistakes:
+            result.mistakes.set(mistakes)
 
         return result
 
