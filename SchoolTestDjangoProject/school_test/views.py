@@ -93,16 +93,16 @@ class StudentAnalyticsView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
     serializer_class = AnalyticSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'student_id'
 
+    def get_queryset(self):
+        student_id = self.kwargs['student_id']
 
 class StudentTestHistoryView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
     serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'student_id'
 
-    def get_queryset(self):
-        student_id = self.kwargs['student_id']
 
 
 class SubjectListView(generics.ListAPIView):
