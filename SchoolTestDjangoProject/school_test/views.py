@@ -47,19 +47,20 @@ class SubmitTestView(generics.GenericAPIView):
 
         if serializer.is_valid():
             result = serializer.save()
-            result.save()
 
+
+            result.save(force_insert=True)
 
             test_history, _ = TestHistory.objects.get_or_create(student=result.student)
             test_history.results.add(result)
             test_history.update_fields()
             test_history.save()
 
-
             if result.student.profile.school:
                 school = result.student.profile.school
                 school_history, _ = SchoolHistory.objects.get_or_create(school=school)
                 school_history.save()
+
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
