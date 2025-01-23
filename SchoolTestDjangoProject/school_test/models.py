@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Avg
 from register.models import School
 
 
@@ -98,13 +99,16 @@ class Answer(models.Model):
 
 
 class Result(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    mistakes = models.ManyToManyField(Question, blank=True, related_name="mistakes")
-    date_taken = models.DateTimeField(auto_now_add=True)
-    total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True)
-    correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Ученик")
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name="Тест")
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Процент")
+    mistakes = models.ManyToManyField(Question, blank=True, related_name="mistakes", verbose_name="Ошибки")
+    date_taken = models.DateTimeField(auto_now_add=True, verbose_name="Дата прохождения")
+    total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name="Всего вопросов")
+    correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
+                                                        verbose_name="Правильные ответы")
+    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
+                                             verbose_name="Средний процент")
 
     def total_questions(self):
         return self.test.questions.count()
@@ -115,6 +119,10 @@ class Result(models.Model):
     def save(self, *args, **kwargs):
         self.total_questions_count = self.total_questions()
         self.correct_answers_count = self.correct_answers()
+        self.average_percentage = (
+                Result.objects.filter(student=self.student)
+                .aggregate(avg=Avg('percentage'))['avg'] or 0
+        )
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -122,7 +130,7 @@ class Result(models.Model):
 
     class Meta:
         verbose_name = 'Результат'
-        verbose_name_plural = 'Результат'
+        verbose_name_plural = 'Результаты'
 
 
 class Recommendation(models.Model):
@@ -147,3 +155,48 @@ class Recommendation(models.Model):
     class Meta:
         verbose_name = 'Рекомендации'
         verbose_name_plural = 'Рекомендации'
+
+
+class TestHistory(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Ученик")
+    total_tests = models.PositiveIntegerField(default=0, verbose_name="Количество тестов")
+    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
+                                             verbose_name="Средний процент")
+    all_mistakes = models.TextField(blank=True, verbose_name="Все ошибки")
+    all_recommendations = models.TextField(blank=True, verbose_name="Все рекомендации")
+
+    def save(self, *args, **kwargs):
+        results = Result.objects.filter(student=self.student)
+        self.total_tests = results.count()
+        self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
+        self.all_mistakes = ", ".join(
+            [mistake.text for result in results for mistake in result.mistakes.all()]
+        )
+        recommendations = []
+        for result in results:
+            for rec in result.test.subject.recommendation_set.all():
+                if rec.min_percentage <= result.percentage <= rec.max_percentage:
+                    recommendations.append(f"{rec.content} ({rec.link})")
+        self.all_recommendations = "; ".join(recommendations)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "История тестов"
+        verbose_name_plural = "История тестов"
+
+
+class SchoolHistory(models.Model):
+    school = models.CharField(max_length=255, verbose_name="Школа")
+    total_students = models.PositiveIntegerField(default=0, verbose_name="Количество учеников")
+    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
+                                             verbose_name="Средний процент")
+
+    def save(self, *args, **kwargs):
+        results = Result.objects.filter(student__profile__school=self.school)
+        self.total_students = results.values('student').distinct().count()
+        self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "История школы"
+        verbose_name_plural = "История школ"
