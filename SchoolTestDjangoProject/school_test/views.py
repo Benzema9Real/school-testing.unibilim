@@ -2,7 +2,8 @@ from rest_framework import status
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation, TestHistory, \
     SchoolHistory
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
-    SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer, SchoolHistorySerializer
+    SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer, SchoolHistorySerializer, \
+    AnalyticSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
