@@ -197,7 +197,8 @@ class SchoolHistory(models.Model):
         self.total_students = results.values('student').distinct().count()
         self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
         super().save(*args, **kwargs)
-
+    def __str__(self):
+        return f"{self.school}"
     class Meta:
         verbose_name = "История школы"
         verbose_name_plural = "История школ"
