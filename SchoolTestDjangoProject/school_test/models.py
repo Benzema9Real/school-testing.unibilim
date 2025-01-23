@@ -153,13 +153,14 @@ class Recommendation(models.Model):
 
 class TestHistory(models.Model):
     student = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Ученик")
+    full_name = models.CharField(max_length=255, blank=True, verbose_name="ФИО")
     results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты")
-    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
-                                             verbose_name="Средний процент")
+    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name="Средний процент")
     all_mistakes = models.TextField(blank=True, verbose_name="Все ошибки")
     all_recommendations = models.TextField(blank=True, verbose_name="Все рекомендации")
 
     def save(self, *args, **kwargs):
+        self.full_name = self.student.profile.name
         results = self.results.all()
         self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
         self.all_mistakes = ", ".join(
@@ -171,12 +172,12 @@ class TestHistory(models.Model):
                 if rec.min_percentage <= result.percentage <= rec.max_percentage:
                     recommendations.append(f"{rec.content} ({rec.link})")
         self.all_recommendations = "; ".join(recommendations)
+
         super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "История тестов"
         verbose_name_plural = "История тестов"
-
 
 class SchoolHistory(models.Model):
     school = models.OneToOneField(School, on_delete=models.CASCADE, verbose_name="Школа")
