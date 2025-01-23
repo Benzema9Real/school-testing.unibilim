@@ -47,8 +47,6 @@ class SubmitTestView(generics.GenericAPIView):
 
         if serializer.is_valid():
             result = serializer.save()
-
-
             result.save(force_insert=True)
 
             test_history, _ = TestHistory.objects.get_or_create(student=result.student)
