@@ -179,7 +179,8 @@ class TestHistory(models.Model):
         super().save(*args, **kwargs)
         self.update_fields()
         super().save(*args, **kwargs)
-
+    def __str__(self):
+        return f"{self.full_name}"
     class Meta:
         verbose_name = "История тестов"
         verbose_name_plural = "История тестов"
