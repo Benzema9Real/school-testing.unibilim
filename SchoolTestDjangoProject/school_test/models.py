@@ -108,7 +108,6 @@ class Result(models.Model):
     correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                         verbose_name="Правильные ответы")
 
-
     def total_questions(self):
         return self.test.questions.count()
 
@@ -153,16 +152,15 @@ class Recommendation(models.Model):
 
 
 class TestHistory(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Ученик")
-    total_tests = models.PositiveIntegerField(default=0, verbose_name="Количество тестов")
+    student = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Ученик")
+    results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты")
     average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
                                              verbose_name="Средний процент")
     all_mistakes = models.TextField(blank=True, verbose_name="Все ошибки")
     all_recommendations = models.TextField(blank=True, verbose_name="Все рекомендации")
 
     def save(self, *args, **kwargs):
-        results = Result.objects.filter(student=self.student)
-        self.total_tests = results.count()
+        results = self.results.all()
         self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
         self.all_mistakes = ", ".join(
             [mistake.text for result in results for mistake in result.mistakes.all()]
@@ -181,7 +179,7 @@ class TestHistory(models.Model):
 
 
 class SchoolHistory(models.Model):
-    school = models.CharField(max_length=255, verbose_name="Школа")
+    school = models.OneToOneField(School, on_delete=models.CASCADE, verbose_name="Школа")
     total_students = models.PositiveIntegerField(default=0, verbose_name="Количество учеников")
     average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
                                              verbose_name="Средний процент")
