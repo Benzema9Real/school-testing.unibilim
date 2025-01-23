@@ -1,4 +1,6 @@
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation, TestHistory, \
     SchoolHistory
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
@@ -97,6 +99,9 @@ class StudentAnalyticsView(generics.ListAPIView):
 
     def get_queryset(self):
         student_id = self.kwargs['student_id']
+        if not User.objects.filter(id=student_id).exists():
+             raise NotFound(detail="Sewing Order not found", code=404)
+        return TestHistory.objects.filter(sewing_order_id=student_id)
 
 class StudentTestHistoryView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
