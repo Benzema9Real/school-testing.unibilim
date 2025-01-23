@@ -1,7 +1,8 @@
 from rest_framework import status
-from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation
+from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation, TestHistory, \
+    SchoolHistory
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
-    SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer
+    SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer, SchoolHistorySerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -43,8 +44,35 @@ class SubmitTestView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
         serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
+
         if serializer.is_valid():
             result = serializer.save()
+
+            test_history, created = TestHistory.objects.get_or_create(student=result.student)
+            test_history.results.add(result)
+            test_history.full_name = result.student.profile.name
+            test_history.average_percentage = test_history.results.aggregate(avg=Avg('percentage'))['avg'] or 0
+            test_history.all_mistakes = ", ".join(
+                [mistake.text for res in test_history.results.all() for mistake in res.mistakes.all()]
+            )
+
+            recommendations = []
+            for res in test_history.results.all():
+                for rec in res.test.subject.recommendation_set.all():
+                    if rec.min_percentage <= res.percentage <= rec.max_percentage:
+                        recommendations.append(f"{rec.content} ({rec.link})")
+
+            test_history.all_recommendations = "; ".join(recommendations)
+            test_history.save()
+            if result.student.profile.school:
+                school = result.student.profile.school
+                school_history, created = SchoolHistory.objects.get_or_create(school=school)
+                school_history.total_students = User.objects.filter(profile__school=school).count()
+                school_history.average_percentage = Result.objects.filter(student__profile__school=school).aggregate(
+                    avg=Avg('percentage')
+                )['avg'] or 0
+                school_history.save()
+
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
@@ -57,98 +85,29 @@ class SubmitTestView(generics.GenericAPIView):
                     for mistake in result.mistakes.all()
                 ]
             }, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SchoolAnalyticsView(APIView):
+class SchoolAnalyticsView(generics.ListAPIView):
+    queryset = SchoolHistory.objects.all()
+    serializer_class = SchoolHistorySerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id, *args, **kwargs):
-        school = get_object_or_404(School, id=id)
-        total_tests = Test.objects.filter(school=school).count()
-        total_questions = sum(test.questions.count() for test in school.tests.all())
-        total_students = User.objects.filter(profile__school=school).count()
-        average_percentage = Result.objects.filter(test__school=school).aggregate(
-            avg=Avg('percentage')
-        )['avg'] or 0
 
-        total_answers = Answer.objects.filter(test__school=school).count()
-        correct_answers = Answer.objects.filter(test__school=school, is_correct=True).count()
-        correct_percentage = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-        data = {
-            "Школа": school.name,
-            "Количество тестов": total_tests,
-            "Количество Вопросов": total_questions,
-            "Количество учеников": total_students,
-            "Средний процент": round(average_percentage, 2),
-            "Процент правильных ответов": round(correct_percentage, 2),
-        }
-        return Response(data, status=200)
-
-
-class StudentAnalyticsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, id, *args, **kwargs):
-        user = get_object_or_404(User, id=id)
-        student_profile = user.profile
-        full_name = student_profile.name
-        total_tests_taken = Result.objects.filter(student=user).count()
-        average_percentage = Result.objects.filter(student=user).aggregate(
-            avg=Avg('percentage')
-        )['avg'] or 0
-        total_answers = Answer.objects.filter(student=user).count()
-        correct_answers = Answer.objects.filter(student=user, is_correct=True).count()
-        correct_percentage = (correct_answers / total_answers * 100) if total_answers > 0 else 0
-
-        recommendations_set = set()
-        results = Result.objects.filter(student=user)
-
-        for result in results:
-            recommendations_for_subject = Recommendation.objects.filter(
-                subject=result.test.subject,
-                min_percentage__lte=result.percentage,
-                max_percentage__gte=result.percentage
-            )
-            for recommendation in recommendations_for_subject:
-                recommendations_set.add((
-                    recommendation.subject.name,
-                    recommendation.message,
-                    recommendation.link,
-                ))
-
-        recommendations = [
-            {"Предмет": rec[0], "Текст": rec[1], "Ссылка": rec[2]}
-            for rec in recommendations_set
-        ]
-
-        data = {
-            "ФИО ученика": full_name,
-            "Количество пройденных тестов": total_tests_taken,
-            "Средний процент": round(average_percentage, 2),
-            "Процент правильных ответов": round(correct_percentage, 2),
-            "Рекомендации": recommendations,
-        }
-        return Response(data, status=200)
-
-
-class StudentTestHistoryView(generics.ListAPIView):
+class StudentAnalyticsView():
     serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id, *args, **kwargs):
-        student = get_object_or_404(User, id=id)
-        student_profile = student.profile
-        full_name = student_profile.name
-        results = Result.objects.filter(student=student).select_related('test', 'test__subject')
 
-        tests_history = []
+class StudentTestHistoryView(generics.ListAPIView):
+    queryset = TestHistory.objects.all()
+    serializer_class = StudentHistorySerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'student_id'
 
-        data = {
-            "ФИО": full_name,
-            "История прохождения тестов": tests_history
-        }
-        return Response(data, status=200)
+    def get_queryset(self):
+        student_id = self.kwargs['student_id']
 
 
 class SubjectListView(generics.ListAPIView):
