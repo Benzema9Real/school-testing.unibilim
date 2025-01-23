@@ -36,7 +36,7 @@ class TestDetailView(generics.RetrieveAPIView):
     serializer_class = TestListSerializer
     permission_classes = []
 
-class SubmitTestView(generics.GenericAPIView):
+class SubmitTestView(APIView):
     serializer_class = TestSubmissionSerializer
     permission_classes = [IsAuthenticated]
 
@@ -45,14 +45,15 @@ class SubmitTestView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request, 'test_id': test_id})
 
         if serializer.is_valid():
+            # Сначала сохраняем результат
             result = serializer.save()
 
-            # Сохраняем результат в базе данных, чтобы он получил ID
+            # Сохраняем результат, чтобы он получил ID
             result.save()
 
-            # Теперь добавляем его в TestHistory после сохранения
+            # Теперь добавляем результат в историю тестов
             test_history, _ = TestHistory.objects.get_or_create(student=result.student)
-            test_history.results.add(result)  # Добавляем результат после его сохранения
+            test_history.results.add(result)  # Добавляем результат после сохранения
             test_history.save()
 
             # Если студент связан с школой, обновляем SchoolHistory
@@ -75,6 +76,7 @@ class SubmitTestView(generics.GenericAPIView):
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
