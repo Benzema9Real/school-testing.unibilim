@@ -88,7 +88,7 @@ class SchoolAnalyticsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class StudentAnalyticsView():
+class StudentAnalyticsView(generics.ListAPIView):
     serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
 
