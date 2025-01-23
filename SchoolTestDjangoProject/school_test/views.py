@@ -43,36 +43,22 @@ class SubmitTestView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
-        serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
+        serializer = self.get_serializer(data=request.data, context={'request': request, 'test_id': test_id})
 
         if serializer.is_valid():
             result = serializer.save()
 
-            test_history, created = TestHistory.objects.get_or_create(student=result.student)
+
+            test_history, _ = TestHistory.objects.get_or_create(student=result.student)
             test_history.results.add(result)
-            test_history.full_name = result.student.profile.name
-            test_history.average_percentage = test_history.results.aggregate(avg=Avg('percentage'))['avg'] or 0
-            test_history.all_mistakes = ", ".join(
-                [mistake.text for res in test_history.results.all() for mistake in res.mistakes.all()]
-            )
-
-            recommendations = []
-            for res in test_history.results.all():
-                for rec in res.test.subject.recommendation_set.all():
-                    if rec.min_percentage <= res.percentage <= rec.max_percentage:
-                        recommendations.append(f"{rec.content} ({rec.link})")
-
-            test_history.all_recommendations = "; ".join(recommendations)
+            test_history.update_fields()
             test_history.save()
+
+
             if result.student.profile.school:
                 school = result.student.profile.school
-                school_history, created = SchoolHistory.objects.get_or_create(school=school)
-                school_history.total_students = User.objects.filter(profile__school=school).count()
-                school_history.average_percentage = Result.objects.filter(student__profile__school=school).aggregate(
-                    avg=Avg('percentage')
-                )['avg'] or 0
+                school_history, _ = SchoolHistory.objects.get_or_create(school=school)
                 school_history.save()
-
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
