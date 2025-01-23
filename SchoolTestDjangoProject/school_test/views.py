@@ -36,7 +36,7 @@ class TestDetailView(generics.RetrieveAPIView):
     serializer_class = TestListSerializer
     permission_classes = []
 
-class SubmitTestView(generics.CreateAPIView):
+class SubmitTestView(generics.GenericAPIView):
     serializer_class = TestSubmissionSerializer
     permission_classes = [IsAuthenticated]
 
