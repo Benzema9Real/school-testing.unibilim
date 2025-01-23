@@ -47,16 +47,15 @@ class SubmitTestView(generics.GenericAPIView):
         if serializer.is_valid():
             result = serializer.save()
 
-            # Сохраняем результат сразу, чтобы он получил id
+            # Сохраняем результат в базе данных, чтобы он получил ID
             result.save()
 
-            # Теперь добавляем результат в TestHistory
+            # Теперь добавляем его в TestHistory после сохранения
             test_history, _ = TestHistory.objects.get_or_create(student=result.student)
-            test_history.results.add(result)  # Добавляем результат после того, как он сохранён
-            test_history.update_fields()
+            test_history.results.add(result)  # Добавляем результат после его сохранения
             test_history.save()
 
-            # Сохраняем SchoolHistory, если студент связан с школой
+            # Если студент связан с школой, обновляем SchoolHistory
             if result.student.profile.school:
                 school = result.student.profile.school
                 school_history, _ = SchoolHistory.objects.get_or_create(school=school)
@@ -76,6 +75,7 @@ class SubmitTestView(generics.GenericAPIView):
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
