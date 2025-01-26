@@ -33,10 +33,13 @@ class StudentHistorySerializer(serializers.ModelSerializer):
         model = TestHistory
         fields = '__all__'
 
+
 class AnalyticSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestHistory
-        fields = ['average_percentage','full_name','total_questions_history','all_mistakes']
+        fields = ['average_percentage', 'full_name', 'total_questions_history', 'all_mistakes']
+
+
 class SchoolHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolHistory
@@ -77,22 +80,51 @@ class TestSubmissionSerializer(serializers.Serializer):
         )
     )
 
+    def validate(self, data):
+        test_id = self.context['test_id']
+        answers = data['answers']
+
+        try:
+            test = Test.objects.get(id=test_id)
+        except Test.DoesNotExist:
+            raise serializers.ValidationError(f"Тест с ID {test_id} не найден.")
+
+        question_ids = set(q.id for q in test.questions.all())
+        provided_question_ids = {answer['question_id'] for answer in answers}
+
+        missing_questions = question_ids - provided_question_ids
+        if missing_questions:
+            missing_question_texts = [
+                Question.objects.get(id=question_id).text for question_id in missing_questions
+            ]
+            raise serializers.ValidationError({
+                "answers": f"Вы не ответили на следующие вопросы: {', '.join(missing_question_texts)}"
+            })
+
+        for answer in answers:
+            if answer['question_id'] not in question_ids:
+                raise serializers.ValidationError(f"Вопрос с ID {answer['question_id']} не принадлежит тесту.")
+
+        return data
+
     def create(self, validated_data):
         user = self.context['request'].user
         test_id = self.context['test_id']
         test = Test.objects.get(id=test_id)
         answers_data = validated_data['answers']
-
         correct_answers = 0
         total_questions = test.questions.count()
-
+        mistakes = []
 
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
 
             is_correct = selected_option.is_correct
-
+            if is_correct:
+                correct_answers += 1
+            else:
+                mistakes.append(question)
 
             Answer.objects.create(
                 student=user,
@@ -102,22 +134,15 @@ class TestSubmissionSerializer(serializers.Serializer):
                 is_correct=is_correct
             )
 
-            if is_correct:
-                correct_answers += 1
-
         percentage = (correct_answers / total_questions) * 100
-
 
         result = Result.objects.create(
             student=user,
             test=test,
-            percentage=percentage
+            percentage=percentage,
         )
-
-
+        result.mistakes.set(mistakes)
         return result
-
-
 
 
 class TestResultSerializer(serializers.ModelSerializer):
@@ -126,8 +151,3 @@ class TestResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = '__all__'
-
-
-
-
-
