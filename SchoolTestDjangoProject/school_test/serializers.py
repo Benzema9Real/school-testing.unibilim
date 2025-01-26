@@ -131,6 +131,7 @@ class TestSubmissionSerializer(serializers.Serializer):
 
         percentage = (correct_answers / total_questions) * 100
 
+        # Сохраняем результат перед использованием связи many-to-many
         result = Result.objects.create(
             student=user,
             test=test,
@@ -138,7 +139,7 @@ class TestSubmissionSerializer(serializers.Serializer):
         )
 
         if mistakes:
-            result.mistakes.add(*mistakes)
+            result.mistakes.set(mistakes)  # Используем .set() вместо .add() для оптимизации
 
         return result
 
