@@ -36,25 +36,28 @@ class TestDetailView(generics.RetrieveAPIView):
     permission_classes = []
 
 
-class SubmitTestView(generics.CreateAPIView):
+class SubmitTestView(generics.GenericAPIView):
     serializer_class = TestSubmissionSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
-        serializer = self.get_serializer(data=request.data, context={'request': request, 'test_id': test_id})
-
+        serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
         if serializer.is_valid():
             result = serializer.save()
             return Response({
-                "message": "Тест успешно отправлен.",
+                "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
                 "percentage": result.percentage,
-                "result_id": result.id
-            }, status=status.HTTP_201_CREATED)
-
+                "mistakes": [
+                    {
+                        "question_id": mistake.id,
+                        "question_text": mistake.text
+                    }
+                    for mistake in result.mistakes.all()
+                ]
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SaveTestResultView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
