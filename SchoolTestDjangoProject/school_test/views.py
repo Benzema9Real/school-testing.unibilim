@@ -42,7 +42,7 @@ class SubmitTestView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
-        serializer = TestPassSerializer(data=request.data, context={'request': request, 'test_id': test_id})
+        serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
         if serializer.is_valid():
             user = request.user
             test = Test.objects.get(id=test_id)
@@ -103,15 +103,15 @@ class ResultSaveView(generics.GenericAPIView):
             result = Result.objects.get(id=result_id, student=request.user)
         except Result.DoesNotExist:
             return Response({"error": "Результат не найден."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Ensure student history exists
+        result.is_saved = True
+        result.save()
         student_history, created = TestHistory.objects.get_or_create(student=request.user)
 
-        # Ensure school history exists
+
         school = request.user.school  # Assuming user has a school relation
         school_history, created = SchoolHistory.objects.get_or_create(school=school)
 
-        # Add result to histories
+
         student_history.results.add(result)
         school_history.results.add(result)
 
