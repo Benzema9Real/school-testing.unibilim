@@ -71,6 +71,14 @@ class TestCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_by']
 
 
+class TestResultSerializer(serializers.ModelSerializer):
+    mistakes = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Result
+        fields = '__all__'
+
+
 class TestSubmissionSerializer(serializers.Serializer):
     answers = serializers.ListField(
         child=serializers.DictField(
@@ -116,6 +124,7 @@ class TestSubmissionSerializer(serializers.Serializer):
         total_questions = test.questions.count()
         mistakes = []
 
+        # Обработка ответов пользователя
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
@@ -125,6 +134,8 @@ class TestSubmissionSerializer(serializers.Serializer):
                 correct_answers += 1
             else:
                 mistakes.append(question)
+
+            # Сохранение ответа
             Answer.objects.create(
                 student=user,
                 test=test,
@@ -133,21 +144,19 @@ class TestSubmissionSerializer(serializers.Serializer):
                 is_correct=is_correct
             )
 
+        # Расчет процента правильных ответов
         percentage = (correct_answers / total_questions) * 100
+
+        # Создание и сохранение объекта Result
         result = Result.objects.create(
             student=user,
             test=test,
             percentage=percentage,
         )
+
+        # Добавление ошибок в поле ManyToMany только после сохранения Result
         if mistakes:
             result.mistakes.add(*mistakes)
 
         return result
 
-
-class TestResultSerializer(serializers.ModelSerializer):
-    mistakes = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Result
-        fields = '__all__'
