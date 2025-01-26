@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6c5b71b-dd72-449c-a9ef-bb76f36ed0b8" name="Changes" comment="update all">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchoolTestDjangoProject/school_test/serializers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -211,14 +212,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1736265936278</updated>
-    </task>
-    <task id="LOCAL-00022" summary="update all">
-      <option name="closed" value="true" />
-      <created>1736854490022</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1736854490022</updated>
     </task>
     <task id="LOCAL-00023" summary="update all">
       <option name="closed" value="true" />
@@ -604,7 +597,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737865476281</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="update all">
+      <option name="closed" value="true" />
+      <created>1737865718966</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1737865718966</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

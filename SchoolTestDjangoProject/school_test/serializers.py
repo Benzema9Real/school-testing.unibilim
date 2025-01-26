@@ -126,6 +126,7 @@ class TestSubmissionSerializer(serializers.Serializer):
             else:
                 mistakes.append(question)
 
+            # Создание ответа для вопроса
             Answer.objects.create(
                 student=user,
                 test=test,
@@ -136,13 +137,17 @@ class TestSubmissionSerializer(serializers.Serializer):
 
         percentage = (correct_answers / total_questions) * 100
 
+        # Сначала создаем и сохраняем объект Result
         result = Result.objects.create(
             student=user,
             test=test,
             percentage=percentage,
         )
-        result.save()
-        result.mistakes.set(mistakes)
+
+        # После сохранения объекта Result добавляем ошибки
+        if mistakes:
+            result.mistakes.set(mistakes)
+
         return result
 
 
