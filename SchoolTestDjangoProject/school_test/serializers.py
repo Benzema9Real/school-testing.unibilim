@@ -141,6 +141,7 @@ class TestSubmissionSerializer(serializers.Serializer):
             test=test,
             percentage=percentage,
         )
+        result.save()
         result.mistakes.set(mistakes)
         return result
 
