@@ -45,33 +45,12 @@ class SubmitTestView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request, 'test_id': test_id})
 
         if serializer.is_valid():
-
             result = serializer.save()
-
-            result.save()
-
-            # Теперь добавляем результат в историю тестов
-            test_history, _ = TestHistory.objects.get_or_create(student=result.student)
-            test_history.results.add(result)  # Добавляем результат после сохранения
-            test_history.save()
-
-            # Если студент связан с школой, обновляем SchoolHistory
-            if result.student.profile.school:
-                school = result.student.profile.school
-                school_history, _ = SchoolHistory.objects.get_or_create(school=school)
-                school_history.save()
 
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
                 "percentage": result.percentage,
-                "mistakes": [
-                    {
-                        "question_id": mistake.id,
-                        "question_text": mistake.text
-                    }
-                    for mistake in result.mistakes.all()
-                ]
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

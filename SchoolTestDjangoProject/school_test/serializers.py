@@ -77,28 +77,32 @@ class TestSubmissionSerializer(serializers.Serializer):
     )
 
     def validate(self, data):
-        test_id = self.context['test_id']
-        answers = data['answers']
+        test_id = self.context.get('test_id')
+        answers = data.get('answers')
 
+        # Проверка существования теста
         try:
             test = Test.objects.get(id=test_id)
         except Test.DoesNotExist:
             raise serializers.ValidationError(f"Тест с ID {test_id} не найден.")
 
-        question_ids = set(q.id for q in test.questions.all())
+        # Получение ID вопросов из теста
+        question_ids = set(question.id for question in test.questions.all())
         provided_question_ids = {answer['question_id'] for answer in answers}
 
+        # Проверка на пропущенные вопросы
         missing_questions = question_ids - provided_question_ids
         if missing_questions:
-            missing_question_texts = [
-                Question.objects.get(id=question_id).text for question_id in missing_questions
-            ]
             raise serializers.ValidationError({
-                "answers": f"Вы не ответили на следующие вопросы: {', '.join(missing_question_texts)}"
+                "answers": f"Вы не ответили на вопросы: {', '.join(map(str, missing_questions))}."
             })
+
+        # Проверка на лишние вопросы
         for answer in answers:
             if answer['question_id'] not in question_ids:
-                raise serializers.ValidationError(f"Вопрос с ID {answer['question_id']} не принадлежит тесту.")
+                raise serializers.ValidationError(
+                    f"Вопрос с ID {answer['question_id']} не принадлежит этому тесту."
+                )
 
         return data
 
@@ -107,20 +111,24 @@ class TestSubmissionSerializer(serializers.Serializer):
         test_id = self.context['test_id']
         test = Test.objects.get(id=test_id)
         answers_data = validated_data['answers']
+
         correct_answers = 0
         total_questions = test.questions.count()
         mistakes = []
 
+        # Обработка ответов пользователя
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
 
+            # Проверка правильности ответа
             is_correct = selected_option.is_correct
             if is_correct:
                 correct_answers += 1
             else:
                 mistakes.append(question)
 
+            # Сохранение ответа
             Answer.objects.create(
                 student=user,
                 test=test,
@@ -129,19 +137,22 @@ class TestSubmissionSerializer(serializers.Serializer):
                 is_correct=is_correct
             )
 
+        # Подсчет процента правильных ответов
         percentage = (correct_answers / total_questions) * 100
 
-        # Сохраняем результат перед использованием связи many-to-many
+        # Создание результата
         result = Result.objects.create(
             student=user,
             test=test,
             percentage=percentage,
         )
 
+        # Сохранение ошибок, если есть
         if mistakes:
-            result.mistakes.set(mistakes)  # Используем .set() вместо .add() для оптимизации
+            result.mistakes.add(*mistakes)
 
         return result
+
 
 
 class TestResultSerializer(serializers.ModelSerializer):
