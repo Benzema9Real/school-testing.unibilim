@@ -125,7 +125,6 @@ class TestSubmissionSerializer(serializers.Serializer):
                 correct_answers += 1
             else:
                 mistakes.append(question)
-
             Answer.objects.create(
                 student=user,
                 test=test,
@@ -140,9 +139,8 @@ class TestSubmissionSerializer(serializers.Serializer):
             test=test,
             percentage=percentage,
         )
-
         if mistakes:
-            result.mistakes.set(mistakes)
+            result.mistakes.add(*mistakes)
 
         return result
 
