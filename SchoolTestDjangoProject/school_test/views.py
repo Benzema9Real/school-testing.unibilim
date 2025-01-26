@@ -4,7 +4,7 @@ from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event
     SchoolHistory
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
     SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer, SchoolHistorySerializer, \
-    AnalyticSerializer
+    AnalyticSerializer, ResultSaveSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, status
@@ -42,43 +42,83 @@ class SubmitTestView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
-        serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
+        serializer = TestPassSerializer(data=request.data, context={'request': request, 'test_id': test_id})
         if serializer.is_valid():
-            result = serializer.save()
+            user = request.user
+            test = Test.objects.get(id=test_id)
+            answers_data = serializer.validated_data['answers']
+            correct_answers = 0
+            total_questions = test.questions.count()
+            mistakes = []
+
+            for answer_data in answers_data:
+                question = Question.objects.get(id=answer_data['question_id'])
+                selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
+                is_correct = selected_option.is_correct
+                if is_correct:
+                    correct_answers += 1
+                else:
+                    mistakes.append(question)
+
+                Answer.objects.create(
+                    student=user,
+                    test=test,
+                    question=question,
+                    selected_option=selected_option,
+                    is_correct=is_correct
+                )
+
+            percentage = (correct_answers / total_questions) * 100
+
+            # Temporary result creation (not yet in history)
+            result = Result.objects.create(
+                student=user,
+                test=test,
+                percentage=percentage
+            )
+            result.mistakes.set(mistakes)
 
             return Response({
-                "message": "Тест успешно завершён.",
-                "test_id": result.test.id,
+                "message": "Прохождение теста завершено.",
+                "result_id": result.id,
                 "percentage": result.percentage,
                 "mistakes": [
                     {
                         "question_id": mistake.id,
                         "question_text": mistake.text
                     }
-                    for mistake in result.mistakes.all()
+                    for mistake in mistakes
                 ]
             }, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SaveTestResultView(generics.UpdateAPIView):
+class ResultSaveView(generics.GenericAPIView):
+    serializer_class = ResultSaveSerializer
     permission_classes = [IsAuthenticated]
-    queryset = Result.objects.all()
-    lookup_field = 'id'
 
-    def update(self, request, *args, **kwargs):
-        result = self.get_object()
+    def post(self, request, *args, **kwargs):
+        result_id = kwargs.get('result_id')
+        try:
+            result = Result.objects.get(id=result_id, student=request.user)
+        except Result.DoesNotExist:
+            return Response({"error": "Результат не найден."}, status=status.HTTP_404_NOT_FOUND)
 
-        if result.student != request.user:
-            return Response({"error": "Вы не можете сохранить этот результат."}, status=status.HTTP_403_FORBIDDEN)
+        # Ensure student history exists
+        student_history, created = TestHistory.objects.get_or_create(student=request.user)
 
-        result.is_saved = True
-        result.save()
+        # Ensure school history exists
+        school = request.user.school  # Assuming user has a school relation
+        school_history, created = SchoolHistory.objects.get_or_create(school=school)
 
-        test_history, _ = TestHistory.objects.get_or_create(student=result.student)
-        test_history.results.add(result)
-        test_history.save()
+        # Add result to histories
+        student_history.results.add(result)
+        school_history.results.add(result)
 
-        return Response({"message": "Результат успешно сохранён."}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Результат сохранен в историю.",
+            "result_id": result.id
+        }, status=status.HTTP_200_OK)
 
 
 class SaveTestResultView(generics.UpdateAPIView):

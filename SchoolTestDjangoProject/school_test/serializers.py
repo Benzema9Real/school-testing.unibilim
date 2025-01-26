@@ -115,48 +115,9 @@ class TestSubmissionSerializer(serializers.Serializer):
 
         return data
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        test_id = self.context['test_id']
-        test = Test.objects.get(id=test_id)
-        answers_data = validated_data['answers']
-        correct_answers = 0
-        total_questions = test.questions.count()
-        mistakes = []
 
-        # Обработка ответов пользователя
-        for answer_data in answers_data:
-            question = Question.objects.get(id=answer_data['question_id'])
-            selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
-
-            is_correct = selected_option.is_correct
-            if is_correct:
-                correct_answers += 1
-            else:
-                mistakes.append(question)
-
-            # Сохранение ответа
-            Answer.objects.create(
-                student=user,
-                test=test,
-                question=question,
-                selected_option=selected_option,
-                is_correct=is_correct
-            )
-
-        # Расчет процента правильных ответов
-        percentage = (correct_answers / total_questions) * 100
-
-        # Создание и сохранение объекта Result
-        result = Result.objects.create(
-            student=user,
-            test=test,
-            percentage=percentage,
-        )
-
-        # Добавление ошибок в поле ManyToMany только после сохранения Result
-        if mistakes:
-            result.mistakes.add(*mistakes)
-
-        return result
-
+class ResultSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = ['id', 'test', 'student', 'percentage', 'mistakes']
+        read_only_fields = ['student', 'test']
