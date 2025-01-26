@@ -45,6 +45,7 @@ class SubmitTestView(generics.GenericAPIView):
         serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
         if serializer.is_valid():
             result = serializer.save()
+            result.save()
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
