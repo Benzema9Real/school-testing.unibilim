@@ -1,16 +1,12 @@
-from rest_framework import status
+from django.contrib.auth.models import User
 from rest_framework.exceptions import NotFound
-
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation, TestHistory, \
     SchoolHistory
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
     SubjectSerializer, EventSerializer, RecommendationSerializer, StudentHistorySerializer, SchoolHistorySerializer, \
     AnalyticSerializer
 from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .models import User, Test, Result, Answer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Subject, Result, Recommendation
@@ -39,7 +35,8 @@ class TestDetailView(generics.RetrieveAPIView):
     serializer_class = TestListSerializer
     permission_classes = []
 
-class SubmitTestView(generics.GenericAPIView):
+
+class SubmitTestView(generics.CreateAPIView):
     serializer_class = TestSubmissionSerializer
     permission_classes = [IsAuthenticated]
 
@@ -48,10 +45,9 @@ class SubmitTestView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data, context={'request': request, 'test_id': test_id})
 
         if serializer.is_valid():
-            # Сначала сохраняем результат
+
             result = serializer.save()
 
-            # Сохраняем результат, чтобы он получил ID
             result.save()
 
             # Теперь добавляем результат в историю тестов
@@ -81,10 +77,6 @@ class SubmitTestView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-
 class SchoolAnalyticsView(generics.ListAPIView):
     queryset = SchoolHistory.objects.all()
     serializer_class = SchoolHistorySerializer
@@ -100,14 +92,14 @@ class StudentAnalyticsView(generics.RetrieveAPIView):
     def get_queryset(self):
         student_id = self.kwargs['student_id']
         if not User.objects.filter(id=student_id).exists():
-             raise NotFound(detail="  not found", code=404)
+            raise NotFound(detail="  not found", code=404)
         return TestHistory.objects.filter(student_id=student_id)
+
 
 class StudentTestHistoryView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
     serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
-
 
 
 class SubjectListView(generics.ListAPIView):
