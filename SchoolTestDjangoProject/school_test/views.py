@@ -46,14 +46,56 @@ class SubmitTestView(generics.CreateAPIView):
 
         if serializer.is_valid():
             result = serializer.save()
-
             return Response({
-                "message": "Тест успешно завершён.",
+                "message": "Тест успешно отправлен.",
                 "test_id": result.test.id,
                 "percentage": result.percentage,
-            }, status=status.HTTP_200_OK)
+                "result_id": result.id
+            }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SaveTestResultView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Result.objects.all()
+    lookup_field = 'id'
+
+    def update(self, request, *args, **kwargs):
+        result = self.get_object()
+
+        if result.student != request.user:
+            return Response({"error": "Вы не можете сохранить этот результат."}, status=status.HTTP_403_FORBIDDEN)
+
+        result.is_saved = True
+        result.save()
+
+        test_history, _ = TestHistory.objects.get_or_create(student=result.student)
+        test_history.results.add(result)
+        test_history.save()
+
+        return Response({"message": "Результат успешно сохранён."}, status=status.HTTP_200_OK)
+
+
+class SaveTestResultView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Result.objects.all()
+    lookup_field = 'id'
+
+    def update(self, request, *args, **kwargs):
+        result = self.get_object()
+
+        if result.student != request.user:
+            return Response({"error": "Вы не можете сохранить этот результат."}, status=status.HTTP_403_FORBIDDEN)
+
+        result.is_saved = True
+        result.save()
+
+        test_history, _ = TestHistory.objects.get_or_create(student=result.student)
+        test_history.results.add(result)
+        test_history.save()
+
+        return Response({"message": "Результат успешно сохранён."}, status=status.HTTP_200_OK)
 
 
 class SchoolAnalyticsView(generics.ListAPIView):

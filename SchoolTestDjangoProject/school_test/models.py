@@ -107,6 +107,7 @@ class Result(models.Model):
     total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name="Всего вопросов")
     correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                         verbose_name="Правильные ответы")
+    is_saved = models.BooleanField(default=False)
 
     def total_questions(self):
         return self.test.questions.count()

@@ -73,38 +73,9 @@ class TestSubmissionSerializer(serializers.Serializer):
         child=serializers.DictField(
             child=serializers.IntegerField(),
             help_text="Список словарей с ключами: 'question_id' и 'selected_option_id'."
+                      "Пример для Амантура:{ answers: [{ question_id: 1, selected_option_id: 4},{ question_id: 2,selected_option_id: 8}    ]}"
         )
     )
-
-    def validate(self, data):
-        test_id = self.context.get('test_id')
-        answers = data.get('answers')
-
-        # Проверка существования теста
-        try:
-            test = Test.objects.get(id=test_id)
-        except Test.DoesNotExist:
-            raise serializers.ValidationError(f"Тест с ID {test_id} не найден.")
-
-        # Получение ID вопросов из теста
-        question_ids = set(question.id for question in test.questions.all())
-        provided_question_ids = {answer['question_id'] for answer in answers}
-
-        # Проверка на пропущенные вопросы
-        missing_questions = question_ids - provided_question_ids
-        if missing_questions:
-            raise serializers.ValidationError({
-                "answers": f"Вы не ответили на вопросы: {', '.join(map(str, missing_questions))}."
-            })
-
-        # Проверка на лишние вопросы
-        for answer in answers:
-            if answer['question_id'] not in question_ids:
-                raise serializers.ValidationError(
-                    f"Вопрос с ID {answer['question_id']} не принадлежит этому тесту."
-                )
-
-        return data
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -116,19 +87,14 @@ class TestSubmissionSerializer(serializers.Serializer):
         total_questions = test.questions.count()
         mistakes = []
 
-        # Обработка ответов пользователя
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
 
-            # Проверка правильности ответа
             is_correct = selected_option.is_correct
-            if is_correct:
-                correct_answers += 1
-            else:
+            if not is_correct:
                 mistakes.append(question)
 
-            # Сохранение ответа
             Answer.objects.create(
                 student=user,
                 test=test,
@@ -137,21 +103,21 @@ class TestSubmissionSerializer(serializers.Serializer):
                 is_correct=is_correct
             )
 
-        # Подсчет процента правильных ответов
+            if is_correct:
+                correct_answers += 1
+
         percentage = (correct_answers / total_questions) * 100
 
-        # Создание результата
+
         result = Result.objects.create(
             student=user,
             test=test,
-            percentage=percentage,
+            percentage=percentage
         )
-
-        # Сохранение ошибок, если есть
-        if mistakes:
-            result.mistakes.add(*mistakes)
+        result.mistakes.add(*mistakes)
 
         return result
+
 
 
 
@@ -161,3 +127,8 @@ class TestResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = '__all__'
+
+
+
+
+
