@@ -85,15 +85,14 @@ class TestSubmissionSerializer(serializers.Serializer):
 
         correct_answers = 0
         total_questions = test.questions.count()
-        mistakes = []
+
 
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
 
             is_correct = selected_option.is_correct
-            if not is_correct:
-                mistakes.append(question)
+
 
             Answer.objects.create(
                 student=user,
@@ -114,7 +113,7 @@ class TestSubmissionSerializer(serializers.Serializer):
             test=test,
             percentage=percentage
         )
-        result.mistakes.add(*mistakes)
+
 
         return result
 
