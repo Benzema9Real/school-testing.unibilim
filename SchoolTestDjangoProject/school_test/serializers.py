@@ -1,4 +1,6 @@
-from rest_framework import serializers, request
+from urllib import request
+
+from rest_framework import serializers
 from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation, TestHistory, \
     SchoolHistory
 
