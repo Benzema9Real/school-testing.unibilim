@@ -44,54 +44,21 @@ class SubmitTestView(generics.GenericAPIView):
         test_id = kwargs.get('pk')
         serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
         if serializer.is_valid():
-            user = request.user
-            test = Test.objects.get(id=test_id)
-            answers_data = serializer.validated_data['answers']
-            correct_answers = 0
-            total_questions = test.questions.count()
-            mistakes = []
-
-            for answer_data in answers_data:
-                question = Question.objects.get(id=answer_data['question_id'])
-                selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
-                is_correct = selected_option.is_correct
-                if is_correct:
-                    correct_answers += 1
-                else:
-                    mistakes.append(question)
-
-                Answer.objects.create(
-                    student=user,
-                    test=test,
-                    question=question,
-                    selected_option=selected_option,
-                    is_correct=is_correct
-                )
-
-            percentage = (correct_answers / total_questions) * 100
-
-            # Temporary result creation (not yet in history)
-            result = Result.objects.create(
-                student=user,
-                test=test,
-                percentage=percentage
-            )
-            result.mistakes.set(mistakes)
-
+            result = serializer.save()
             return Response({
-                "message": "Прохождение теста завершено.",
-                "result_id": result.id,
+                "message": "Тест успешно завершён.",
+                "test_id": result.test.id,
                 "percentage": result.percentage,
                 "mistakes": [
                     {
                         "question_id": mistake.id,
                         "question_text": mistake.text
                     }
-                    for mistake in mistakes
+                    for mistake in result.mistakes.all()
                 ]
             }, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ResultSaveView(generics.GenericAPIView):
     serializer_class = ResultSaveSerializer
@@ -107,10 +74,8 @@ class ResultSaveView(generics.GenericAPIView):
         result.save()
         student_history, created = TestHistory.objects.get_or_create(student=request.user)
 
-
         school = request.user.school  # Assuming user has a school relation
         school_history, created = SchoolHistory.objects.get_or_create(school=school)
-
 
         student_history.results.add(result)
         school_history.results.add(result)
