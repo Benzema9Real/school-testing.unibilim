@@ -53,7 +53,7 @@ class StudentHistorySerializer(serializers.ModelSerializer):
 class AnalyticSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestHistory
-        fields = ['average_percentage', 'full_name', 'total_questions_history', 'all_mistakes']
+        fields = ['average_percentage', 'full_name']
 
 
 class SchoolHistorySerializer(serializers.ModelSerializer):
