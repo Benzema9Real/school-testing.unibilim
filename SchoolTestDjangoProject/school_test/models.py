@@ -182,6 +182,7 @@ class SchoolHistory(models.Model):
     school = models.OneToOneField(School, on_delete=models.CASCADE, verbose_name="Школа")
     total_students = models.PositiveIntegerField(default=0, verbose_name="Количество учеников")
     average_percentage = models.FloatField(default=0.0)
+    results = models.ManyToManyField(Result, related_name="school_histories")
 
 
     def __str__(self):
