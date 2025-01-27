@@ -103,6 +103,9 @@ class Result(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2)
     mistakes = models.ManyToManyField(Question, blank=True, related_name="mistakes")
     date_taken = models.DateTimeField(auto_now_add=True)
+    total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name="Всего вопросов")
+    correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
+                                                        verbose_name="Правильные ответы")
 
     def total_questions(self):
         return self.test.questions.count()
@@ -110,12 +113,17 @@ class Result(models.Model):
     def correct_answers(self):
         return self.total_questions() - self.mistakes.count()
 
+    def save(self, *args, **kwargs):
+        self.total_questions_count = self.total_questions()
+        self.correct_answers_count = self.correct_answers()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.student.username} - {self.test.name} - {self.percentage}%"
 
     class Meta:
         verbose_name = 'Результат'
-        verbose_name_plural = 'Результат'
+        verbose_name_plural = 'Результаты'
 
 
 class Recommendation(models.Model):
@@ -140,3 +148,4 @@ class Recommendation(models.Model):
     class Meta:
         verbose_name = 'Рекомендации'
         verbose_name_plural = 'Рекомендации'
+
