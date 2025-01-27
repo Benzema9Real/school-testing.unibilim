@@ -114,8 +114,7 @@ class TestSubmissionSerializer(serializers.Serializer):
         total_questions = test.questions.count()
         mistakes = []
 
-        school_history, created = SchoolHistory.objects.get_or_create(school=school)
-        school_history.save()
+
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
@@ -145,13 +144,9 @@ class TestSubmissionSerializer(serializers.Serializer):
         test_history.results.add(result)
         test_history.save()
         school = request.user.profile.school
+        school_history, created = SchoolHistory.objects.get_or_create(school=school)
+        school_history.save()
         result.mistakes.set(mistakes)
         return result
 
 
-class TestResultSerializer(serializers.ModelSerializer):
-    mistakes = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Result
-        fields = '__all__'
