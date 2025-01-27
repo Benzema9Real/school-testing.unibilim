@@ -108,7 +108,8 @@ class Result(models.Model):
     correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                         verbose_name="Правильные ответы")
     not_correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
-                                                        verbose_name="Неправильные ответы")
+                                                            verbose_name="Неправильные ответы")
+
     def __str__(self):
         return f"{self.student.username} - {self.test.name} - {self.percentage}%"
 
@@ -149,27 +150,6 @@ class TestHistory(models.Model):
     results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты", blank=True)
     average_percentage = models.FloatField(default=0.0)
 
-
-    #
-    # def total_questions_history_count(self):
-    #     return self.results.test.questions.count()
-    #
-    # def update_fields(self):
-    #     # Обновляем данные, основанные на results
-    #     results = self.results.all()
-    #     self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
-    #     self.all_mistakes = ", ".join(
-    #         [mistake.text for result in results for mistake in result.mistakes.all()]
-    #     )
-    #     recommendations = []
-    #     for result in results:
-    #         for rec in result.test.subject.recommendation_set.all():
-    #             if rec.min_percentage <= result.percentage <= rec.max_percentage:
-    #                 recommendations.append(f"{rec.content} ({rec.link})")
-    #     self.all_recommendations = "; ".join(recommendations)
-
-
-
     def __str__(self):
         return f"{self.full_name}"
 
@@ -183,7 +163,6 @@ class SchoolHistory(models.Model):
     total_students = models.PositiveIntegerField(default=0, verbose_name="Количество учеников")
     average_percentage = models.FloatField(default=0.0)
     results = models.ManyToManyField(Result, related_name="school_histories")
-
 
     def __str__(self):
         return f"{self.school}"

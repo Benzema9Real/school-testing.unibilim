@@ -106,11 +106,11 @@ class TestSubmissionSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user = self.context['request'].user
+        user = self.context['request'].user  # Django request object
         test_id = self.context['test_id']
         test = Test.objects.get(id=test_id)
         answers_data = validated_data['answers']
-        correct_answers = 0
+        correct_answers_count = 0
         not_correct_answers_count = 0
         total_questions = test.questions.count()
         mistakes = []
@@ -121,9 +121,10 @@ class TestSubmissionSerializer(serializers.Serializer):
 
             is_correct = selected_option.is_correct
             if is_correct:
-                correct_answers += 1
+                correct_answers_count += 1
             else:
                 mistakes.append(question)
+
             if not is_correct:
                 not_correct_answers_count += 1
 
@@ -133,19 +134,26 @@ class TestSubmissionSerializer(serializers.Serializer):
                 question=question,
                 selected_option=selected_option,
                 is_correct=is_correct,
+
             )
 
-        percentage = (correct_answers / total_questions) * 100
+        percentage = (correct_answers_count / total_questions) * 100
 
         result = Result.objects.create(
             student=user,
             test=test,
             percentage=percentage,
+            correct_answers_count=correct_answers_count,
+            not_correct_answers_count=not_correct_answers_count,
+            total_questions=total_questions
         )
 
         test_history, created = TestHistory.objects.get_or_create(student=user)
+
+        if not test_history.full_name:
+            test_history.full_name = user.profile.name
+
         test_history.results.add(result)
-        test_history.save()
 
         user_results = test_history.results.all()
         average_user_percentage = sum(r.percentage for r in user_results) / user_results.count()
@@ -154,9 +162,14 @@ class TestSubmissionSerializer(serializers.Serializer):
 
         school = user.profile.school
         school_history, created = SchoolHistory.objects.get_or_create(school=school)
-        school_history.results.add(result)
-        school_results = school_history.results.all()
 
+        student_ids = set(result.student.id for result in school_history.results.all())
+        if user.id not in student_ids:
+            school_history.total_students += 1
+
+        school_history.results.add(result)
+
+        school_results = school_history.results.all()
         average_school_percentage = sum(r.percentage for r in school_results) / school_results.count()
         school_history.average_percentage = average_school_percentage
         school_history.save()
