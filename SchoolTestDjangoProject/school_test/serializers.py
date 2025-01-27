@@ -112,7 +112,7 @@ class TestSubmissionSerializer(serializers.Serializer):
         answers_data = validated_data['answers']
         correct_answers_count = 0
         not_correct_answers_count = 0
-        total_questions = test.questions.count()
+        total_questions_count = test.questions.count()
         mistakes = []
 
         for answer_data in answers_data:
@@ -137,7 +137,7 @@ class TestSubmissionSerializer(serializers.Serializer):
 
             )
 
-        percentage = (correct_answers_count / total_questions) * 100
+        percentage = (correct_answers_count / total_questions_count) * 100
 
         result = Result.objects.create(
             student=user,
@@ -145,7 +145,7 @@ class TestSubmissionSerializer(serializers.Serializer):
             percentage=percentage,
             correct_answers_count=correct_answers_count,
             not_correct_answers_count=not_correct_answers_count,
-            total_questions=total_questions
+            total_questions_count=total_questions_count
         )
 
         test_history, created = TestHistory.objects.get_or_create(student=user)
