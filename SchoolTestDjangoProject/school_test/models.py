@@ -36,6 +36,7 @@ class Question(models.Model):
     image = models.ImageField('Изображения вопроса', upload_to='question/img/', blank=True, null=True)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
     number = models.PositiveIntegerField('Номер вопроса', blank=True, null=True)
+    feedback = models.TextField()
 
     def save(self, *args, **kwargs):
         if self.number is None:
