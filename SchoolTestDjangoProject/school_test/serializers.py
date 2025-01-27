@@ -1,5 +1,6 @@
-from rest_framework import serializers
-from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation
+from rest_framework import serializers, request
+from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation, TestHistory, \
+    SchoolHistory
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -40,6 +41,24 @@ class TestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Test
+        fields = '__all__'
+
+
+class StudentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestHistory
+        fields = '__all__'
+
+
+class AnalyticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestHistory
+        fields = ['average_percentage', 'full_name', 'total_questions_history', 'all_mistakes']
+
+
+class SchoolHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolHistory
         fields = '__all__'
 
 
@@ -95,6 +114,8 @@ class TestSubmissionSerializer(serializers.Serializer):
         total_questions = test.questions.count()
         mistakes = []
 
+        school_history, created = SchoolHistory.objects.get_or_create(school=school)
+        school_history.save()
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
             selected_option = AnswerOption.objects.get(id=answer_data['selected_option_id'])
@@ -120,6 +141,10 @@ class TestSubmissionSerializer(serializers.Serializer):
             test=test,
             percentage=percentage,
         )
+        test_history, created = TestHistory.objects.get_or_create(student=request.user)
+        test_history.results.add(result)
+        test_history.save()
+        school = request.user.profile.school
         result.mistakes.set(mistakes)
         return result
 
