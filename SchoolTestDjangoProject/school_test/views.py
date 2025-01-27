@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 
 from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation
-from .serializers import TestListSerializer, TestSubmissionSerializer, TestResultSerializer, TestCreateSerializer, \
+from .serializers import TestListSerializer, TestSubmissionSerializer, TestCreateSerializer, \
     SubjectSerializer, EventSerializer, RecommendationSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
