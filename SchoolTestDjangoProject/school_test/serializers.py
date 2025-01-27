@@ -1,5 +1,3 @@
-from urllib import request
-
 from rest_framework import serializers
 from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject, Recommendation, TestHistory, \
     SchoolHistory
@@ -113,9 +111,9 @@ class TestSubmissionSerializer(serializers.Serializer):
         test = Test.objects.get(id=test_id)
         answers_data = validated_data['answers']
         correct_answers = 0
+        not_correct_answers_count = 0
         total_questions = test.questions.count()
         mistakes = []
-
 
         for answer_data in answers_data:
             question = Question.objects.get(id=answer_data['question_id'])
@@ -126,13 +124,15 @@ class TestSubmissionSerializer(serializers.Serializer):
                 correct_answers += 1
             else:
                 mistakes.append(question)
+            if not is_correct:
+                not_correct_answers_count += 1
 
             Answer.objects.create(
                 student=user,
                 test=test,
                 question=question,
                 selected_option=selected_option,
-                is_correct=is_correct
+                is_correct=is_correct,
             )
 
         percentage = (correct_answers / total_questions) * 100
@@ -142,13 +142,24 @@ class TestSubmissionSerializer(serializers.Serializer):
             test=test,
             percentage=percentage,
         )
-        test_history, created = TestHistory.objects.get_or_create(student=request.user)
+
+        test_history, created = TestHistory.objects.get_or_create(student=user)
         test_history.results.add(result)
         test_history.save()
-        school = request.user.profile.school
+
+        user_results = test_history.results.all()
+        average_user_percentage = sum(r.percentage for r in user_results) / user_results.count()
+        test_history.average_percentage = average_user_percentage
+        test_history.save()
+
+        school = user.profile.school
         school_history, created = SchoolHistory.objects.get_or_create(school=school)
+        school_history.results.add(result)
+        school_results = school_history.results.all()
+
+        average_school_percentage = sum(r.percentage for r in school_results) / school_results.count()
+        school_history.average_percentage = average_school_percentage
         school_history.save()
+
         result.mistakes.set(mistakes)
         return result
-
-

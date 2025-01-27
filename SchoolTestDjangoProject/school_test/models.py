@@ -107,7 +107,8 @@ class Result(models.Model):
     total_questions_count = models.PositiveIntegerField(default=0, blank=True, null=True, verbose_name="Всего вопросов")
     correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                         verbose_name="Правильные ответы")
-
+    not_correct_answers_count = models.PositiveIntegerField(default=0, blank=True, null=True,
+                                                        verbose_name="Неправильные ответы")
     def __str__(self):
         return f"{self.student.username} - {self.test.name} - {self.percentage}%"
 
@@ -147,34 +148,28 @@ class TestHistory(models.Model):
                                                           verbose_name="Всего вопросов")
     results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты", blank=True,
                                      null=True)
-    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
-                                             verbose_name="Средний процент")
-    all_mistakes = models.TextField(blank=True, verbose_name="Все ошибки")
-    all_recommendations = models.TextField(blank=True, verbose_name="Все рекомендации")
+    average_percentage = models.FloatField(default=0.0)
 
-    def total_questions_history_count(self):
-        return self.results.test.questions.count()
 
-    def update_fields(self):
-        # Обновляем данные, основанные на results
-        results = self.results.all()
-        self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
-        self.all_mistakes = ", ".join(
-            [mistake.text for result in results for mistake in result.mistakes.all()]
-        )
-        recommendations = []
-        for result in results:
-            for rec in result.test.subject.recommendation_set.all():
-                if rec.min_percentage <= result.percentage <= rec.max_percentage:
-                    recommendations.append(f"{rec.content} ({rec.link})")
-        self.all_recommendations = "; ".join(recommendations)
+    #
+    # def total_questions_history_count(self):
+    #     return self.results.test.questions.count()
+    #
+    # def update_fields(self):
+    #     # Обновляем данные, основанные на results
+    #     results = self.results.all()
+    #     self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
+    #     self.all_mistakes = ", ".join(
+    #         [mistake.text for result in results for mistake in result.mistakes.all()]
+    #     )
+    #     recommendations = []
+    #     for result in results:
+    #         for rec in result.test.subject.recommendation_set.all():
+    #             if rec.min_percentage <= result.percentage <= rec.max_percentage:
+    #                 recommendations.append(f"{rec.content} ({rec.link})")
+    #     self.all_recommendations = "; ".join(recommendations)
 
-    def save(self, *args, **kwargs):
-        self.total_questions_history = self.total_questions_history_count()
-        self.full_name = self.student.profile.name
-        super().save(*args, **kwargs)
-        self.update_fields()
-        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.full_name}"
@@ -187,14 +182,8 @@ class TestHistory(models.Model):
 class SchoolHistory(models.Model):
     school = models.OneToOneField(School, on_delete=models.CASCADE, verbose_name="Школа")
     total_students = models.PositiveIntegerField(default=0, verbose_name="Количество учеников")
-    average_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True,
-                                             verbose_name="Средний процент")
+    average_percentage = models.FloatField(default=0.0)
 
-    def save(self, *args, **kwargs):
-        results = Result.objects.filter(student__profile__school=self.school)
-        self.total_students = results.values('student').distinct().count()
-        self.average_percentage = results.aggregate(avg=Avg('percentage'))['avg'] or 0
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.school}"
