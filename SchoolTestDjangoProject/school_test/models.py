@@ -146,8 +146,7 @@ class TestHistory(models.Model):
     full_name = models.CharField(max_length=255, blank=True, verbose_name="ФИО")
     total_questions_history = models.PositiveIntegerField(default=0, blank=True, null=True,
                                                           verbose_name="Всего вопросов")
-    results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты", blank=True,
-                                     null=True)
+    results = models.ManyToManyField(Result, related_name="test_history", verbose_name="Результаты", blank=True)
     average_percentage = models.FloatField(default=0.0)
 
 
