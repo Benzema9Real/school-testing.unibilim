@@ -12,16 +12,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['name', 'phone_number', 'school', 'class_number', 'class_letter']
 
-    def generate_username(self):
-        last_user = User.objects.order_by('id').last()
-        if last_user is None:
-            return 'user000001'
-        last_username = last_user.username
-        try:
-            last_number = int(last_username[4:])
-            return f'user{last_number + 1:06d}'
-        except ValueError:
-            return 'user000001'
+    def generate_username(self, phone_number):
+        return f"user{phone_number}"
 
     def create(self, validated_data):
         name = validated_data.pop('name')
@@ -30,8 +22,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         school = validated_data.pop('school')
         phone_number = validated_data.pop('phone_number')
 
+        username = self.generate_username(phone_number)
+
         user = User.objects.create(
-            username=self.generate_username(),
+            username=username,
         )
 
         Profile.objects.create(
