@@ -100,11 +100,12 @@ class StudentEventListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user_profile = get_object_or_404(self.request.user.profile)
+        user_profile = self.request.user.profile
         return Event.objects.filter(
             school=user_profile.school,
             class_number=user_profile.class_number
         )
+
 
 
 class EventCreateView(generics.CreateAPIView):
