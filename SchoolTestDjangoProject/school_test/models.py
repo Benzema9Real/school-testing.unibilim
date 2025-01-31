@@ -77,7 +77,7 @@ class Event(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.test.name} - {self.school} on {self.date}/{self.time}"
+        return f"{self.test.name} - {self.school} on {self.date}"
 
     class Meta:
         verbose_name = 'Событие'
