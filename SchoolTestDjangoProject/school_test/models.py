@@ -76,6 +76,7 @@ class Event(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='events', verbose_name="Школа")
     class_number = models.CharField(max_length=50, verbose_name="Класс", help_text="Например: 9 или 11")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата проведения")
+    is_completed = models.BooleanField(default=False, verbose_name="Тест пройден")
 
     def __str__(self):
         return f"{self.test.name} - {self.school} - Класс {self.class_number} - {self.date.strftime('%Y-%m-%d')}"

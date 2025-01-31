@@ -43,6 +43,13 @@ class SubmitTestView(generics.GenericAPIView):
 
         if serializer.is_valid():
             result = serializer.save()
+
+
+            event = Event.objects.filter(test=result.test, school=request.user.profile.school, class_number=request.user.profile.class_number).first()
+            if event:
+                event.is_completed = True
+                event.save()
+
             return Response({
                 "message": "Тест успешно завершён.",
                 "test_id": result.test.id,
@@ -56,6 +63,7 @@ class SubmitTestView(generics.GenericAPIView):
                 ]
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class SchoolAnalyticsView(generics.ListAPIView):
