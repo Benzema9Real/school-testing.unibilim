@@ -79,7 +79,7 @@ class StudentAnalyticsView(generics.RetrieveAPIView):
 
 class StudentTestHistoryView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
-    serializer_class = SchoolHistorySerializer
+    serializer_class = StudentHistorySerializer
     permission_classes = [IsAuthenticated]
 
 

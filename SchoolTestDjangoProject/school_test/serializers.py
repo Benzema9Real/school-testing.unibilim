@@ -51,9 +51,10 @@ class TestListSerializer(serializers.ModelSerializer):
 
 
 class StudentHistorySerializer(serializers.ModelSerializer):
+    results_details = ResultSerializer(source='results', read_only=True)
     class Meta:
         model = TestHistory
-        fields = '__all__'
+        fields = ['id', 'student', 'full_name', 'results', 'average_percentage', 'results_details']
 
 
 class RecommendationSerializer(serializers.ModelSerializer):
@@ -85,7 +86,7 @@ class SchoolHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SchoolHistory
-        fields = ['id', 'student', 'full_name', 'results', 'average_percentage', 'results_details']
+        fields = '__all__'
 
 
 class TestCreateSerializer(serializers.ModelSerializer):
