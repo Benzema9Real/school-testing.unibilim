@@ -72,16 +72,17 @@ class AnswerOption(models.Model):
 
 
 class Event(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='event')
-    date = models.DateTimeField(auto_now_add=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name="Тест")
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='events', verbose_name="Школа")
+    class_number = models.CharField(max_length=50, verbose_name="Класс", help_text="Например: 9 или 11")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата проведения")
 
     def __str__(self):
-        return f"{self.test.name} - {self.school} on {self.date}"
+        return f"{self.test.name} - {self.school} - Класс {self.class_number} - {self.date.strftime('%Y-%m-%d')}"
 
     class Meta:
         verbose_name = 'Событие'
-        verbose_name_plural = 'Событие'
+        verbose_name_plural = 'События'
 
 
 class Answer(models.Model):

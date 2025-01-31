@@ -3,13 +3,19 @@ from .models import Answer, Test, Question, AnswerOption, Result, Event, Subject
     SchoolHistory
 
 
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = '__all__'
+
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
 
 
-class RecommendationSerializer(serializers.ModelSerializer):
+class RecommendationAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recommendation
         fields = '__all__'
@@ -57,6 +63,7 @@ class RecommendationSerializer(serializers.ModelSerializer):
         model = Recommendation
         fields = ["class_number", "subject_name", "min_percentage", "max_percentage", "message", "link"]
 
+
 class AnalyticSerializer(serializers.ModelSerializer):
     recommendations = serializers.SerializerMethodField()
 
@@ -73,8 +80,9 @@ class AnalyticSerializer(serializers.ModelSerializer):
         return RecommendationSerializer(recommendations, many=True).data
 
 
-
 class SchoolHistorySerializer(serializers.ModelSerializer):
+    results_details = ResultSerializer(source='results', read_only=True)
+
     class Meta:
         model = SchoolHistory
         fields = '__all__'
@@ -124,7 +132,7 @@ class TestSubmissionSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user = self.context['request'].user  # Django request object
+        user = self.context['request'].user
         test_id = self.context['test_id']
         test = Test.objects.get(id=test_id)
         answers_data = validated_data['answers']

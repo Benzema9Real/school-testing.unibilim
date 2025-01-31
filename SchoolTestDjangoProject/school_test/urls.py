@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import TestListView, TestCreateView, TestDetailView, SubmitTestView, SchoolAnalyticsView, \
     StudentAnalyticsView, SubjectListView, EventListView, EventCreateView, RecommendationCreateView, \
-    RecommendationListView, StudentTestHistoryView
+    RecommendationListView, StudentTestHistoryView, StudentEventListView
 
 urlpatterns = [
     path('tests/', TestListView.as_view(), name='tests'),
@@ -15,6 +15,7 @@ urlpatterns = [
     path('subject/list/', SubjectListView.as_view(), name='subject'),
     path('event/list/', EventListView.as_view(), name='event_list'),
     path('event/create/', EventCreateView.as_view(), name='event_create'),
+    path('student/event-list/', StudentEventListView.as_view(), name='event_create'),
     path('recommendation/list/', RecommendationListView.as_view(), name='recommendation_list'),
     path('recommendation/create/', RecommendationCreateView.as_view(), name='recommendation_create'),
 ]

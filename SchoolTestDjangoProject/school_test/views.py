@@ -1,21 +1,15 @@
-from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.generics import get_object_or_404
 
-from .models import Test, Question, Answer, Result, AnswerOption, Subject, Event, Recommendation
 from .serializers import TestListSerializer, TestSubmissionSerializer, TestCreateSerializer, \
-    SubjectSerializer, EventSerializer, RecommendationSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
+    SubjectSerializer, EventSerializer, RecommendationSerializer, SchoolHistorySerializer, AnalyticSerializer, \
+    StudentHistorySerializer
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from .models import User, Test, Result, Answer
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.db.models import Q
-from .models import Subject, Result, Recommendation, SchoolHistory, TestHistory
-from .serializers import RecommendationSerializer, SchoolHistorySerializer, AnalyticSerializer, StudentHistorySerializer
+from .models import Subject, Result, Recommendation, SchoolHistory, TestHistory, Event
 from register.models import School
-from django.db.models import Avg
 
 
 class TestListView(generics.ListAPIView):
@@ -46,7 +40,6 @@ class SubmitTestView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         test_id = kwargs.get('pk')
         serializer = TestSubmissionSerializer(data=request.data, context={'request': request, 'test_id': test_id})
-
 
         if serializer.is_valid():
             result = serializer.save()
@@ -86,7 +79,7 @@ class StudentAnalyticsView(generics.RetrieveAPIView):
 
 class StudentTestHistoryView(generics.ListAPIView):
     queryset = TestHistory.objects.all()
-    serializer_class = StudentHistorySerializer
+    serializer_class = SchoolHistorySerializer
     permission_classes = [IsAuthenticated]
 
 
@@ -100,6 +93,18 @@ class EventListView(generics.ListAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = []
+
+
+class StudentEventListView(generics.ListAPIView):
+    serializer_class = EventSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_profile = get_object_or_404(self.request.user.profile)
+        return Event.objects.filter(
+            school=user_profile.school,
+            class_number=user_profile.class_number
+        )
 
 
 class EventCreateView(generics.CreateAPIView):
