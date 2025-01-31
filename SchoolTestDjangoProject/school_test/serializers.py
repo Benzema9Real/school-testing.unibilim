@@ -50,10 +50,28 @@ class StudentHistorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RecommendationSerializer(serializers.ModelSerializer):
+    subject_name = serializers.CharField(source="subject.name")
+
+    class Meta:
+        model = Recommendation
+        fields = ["class_number", "subject_name", "min_percentage", "max_percentage", "message", "link"]
+
 class AnalyticSerializer(serializers.ModelSerializer):
+    recommendations = serializers.SerializerMethodField()
+
     class Meta:
         model = TestHistory
-        fields = ['average_percentage', 'full_name']
+        fields = ["average_percentage", "full_name", "recommendations"]
+
+    def get_recommendations(self, obj):
+        recommendations = Recommendation.objects.filter(
+            school=obj.student.profile.school,
+            min_percentage__lte=obj.average_percentage,
+            max_percentage__gte=obj.average_percentage
+        )
+        return RecommendationSerializer(recommendations, many=True).data
+
 
 
 class SchoolHistorySerializer(serializers.ModelSerializer):
