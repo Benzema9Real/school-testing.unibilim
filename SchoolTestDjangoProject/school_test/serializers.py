@@ -51,7 +51,7 @@ class TestListSerializer(serializers.ModelSerializer):
 
 
 class StudentHistorySerializer(serializers.ModelSerializer):
-    results_details = ResultSerializer(source='results', read_only=True)
+    results_details = ResultSerializer(source='results', many=True, read_only=True)
 
     class Meta:
         model = TestHistory
@@ -83,7 +83,7 @@ class AnalyticSerializer(serializers.ModelSerializer):
 
 
 class SchoolHistorySerializer(serializers.ModelSerializer):
-    results_details = ResultSerializer(source='results',many=True, read_only=True)
+    results_details = ResultSerializer(source='results', read_only=True)
 
     class Meta:
         model = SchoolHistory
