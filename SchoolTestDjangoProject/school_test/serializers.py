@@ -85,7 +85,7 @@ class SchoolHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SchoolHistory
-        fields = '__all__'
+        fields = ['id', 'student', 'full_name', 'results', 'average_percentage', 'results_details']
 
 
 class TestCreateSerializer(serializers.ModelSerializer):
