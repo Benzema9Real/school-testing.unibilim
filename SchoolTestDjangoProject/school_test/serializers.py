@@ -52,6 +52,7 @@ class TestListSerializer(serializers.ModelSerializer):
 
 class StudentHistorySerializer(serializers.ModelSerializer):
     results_details = ResultSerializer(source='results', read_only=True)
+
     class Meta:
         model = TestHistory
         fields = ['id', 'student', 'full_name', 'results', 'average_percentage', 'results_details']
